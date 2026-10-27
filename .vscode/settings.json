@@ -1,6 +1,11 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "js/ts.preferences.importModuleSpecifier": "non-relative",
-  "dotnet.defaultSolution": "ZwitscherApi.slnx"
+
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
+
+  "prettier.requireConfig": true,
+  "js/ts.preferences.importModuleSpecifier": "non-relative"
 }
