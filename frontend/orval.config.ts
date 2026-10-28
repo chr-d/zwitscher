@@ -3,7 +3,7 @@ import { defineConfig } from "orval";
 export default defineConfig({
   zwitscher: {
     input: {
-      target: "./openapi.json",
+      target: "http://localhost:5080/openapi/v1.json",
     },
     output: {
       mode: "single",
