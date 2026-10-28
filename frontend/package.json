@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-query": "^5.105.0",
     "daisyui": "^5.7.50",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -32,6 +33,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
+    "orval": "^8.45.0",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "~6.0.3",
