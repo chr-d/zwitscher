@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "api:generate": "orval"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
