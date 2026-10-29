@@ -5,5 +5,5 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from './authorResponseDto';
-export * from './postResponseDto';
+export * from "./authorResponseDto";
+export * from "./postResponseDto";

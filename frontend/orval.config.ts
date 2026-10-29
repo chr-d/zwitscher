@@ -11,6 +11,8 @@ export default defineConfig({
       schemas: "./src/api/generated/models",
       client: "react-query",
       httpClient: "fetch",
+      formatter: "prettier",
+      clean: true,
       baseUrl: {
         runtime: "import.meta.env.VITE_API_BASE_URL",
       },

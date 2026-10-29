@@ -4,7 +4,7 @@
  * ZwitscherApi | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { AuthorResponseDto } from './authorResponseDto';
+import type { AuthorResponseDto } from "./authorResponseDto";
 
 export interface PostResponseDto {
   id: string;
