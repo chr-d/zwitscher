@@ -17,7 +17,7 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { PostResponseDto } from "./models";
+import type { PostResponseDto } from "../models";
 
 const withQueryKey = <T extends object, K>(
   query: T,
