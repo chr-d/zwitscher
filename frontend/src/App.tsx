@@ -1,5 +1,13 @@
+import { Route, Routes } from "react-router";
+
 function App() {
-  return <div>Hello, World!</div>;
+  return (
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Home />} />
+      </Route>
+    </Routes>
+  );
 }
 
 export default App;
