@@ -1,4 +1,4 @@
-import { useGetPosts } from "@/api/generated/zwitscher";
+import { useGetPosts } from "@/api/generated";
 
 function App() {
   const { data, isPending, isError } = useGetPosts();
