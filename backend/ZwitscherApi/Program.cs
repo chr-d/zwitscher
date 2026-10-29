@@ -16,20 +16,22 @@ builder.Services.AddOpenApi();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        "AllowReactApp",
+        "AllowDevFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+            policy
+                .WithOrigins("http://localhost:5173", "http://localhost:4173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         }
     );
 });
 
 var app = builder.Build();
 
-app.UseCors("AllowReactApp");
-
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("AllowDevFrontend");
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
