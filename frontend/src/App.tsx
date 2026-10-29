@@ -10,10 +10,10 @@ function App() {
   }
   return (
     <div>
-      {data.id}
-      {data.author.displayName}
-      {data.createdAtUtc}
-      {data.content}
+      <div>{data.author.displayName}</div>
+      <div>{new Date(data.createdAtUtc).toLocaleDateString()}</div>
+      <div>{data.content}</div>
+      <div>{data.likeCount} Likes</div>
     </div>
   );
 }
