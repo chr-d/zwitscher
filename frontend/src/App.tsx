@@ -1,5 +1,8 @@
 import { Route, Routes } from "react-router";
 
+import MainLayout from "@/layouts/MainLayout";
+import Home from "@/routes/home";
+
 function App() {
   return (
     <Routes>
