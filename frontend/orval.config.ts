@@ -3,7 +3,9 @@ import { defineConfig } from "orval";
 export default defineConfig({
   zwitscher: {
     input: {
-      target: ["./openapi.json", "http://localhost:5080/openapi/v1.json"],
+      target: process.env.CI
+        ? "./openapi.json"
+        : ["http://localhost:5080/openapi/v1.json", "./openapi.json"],
     },
     output: {
       mode: "tags-split",
