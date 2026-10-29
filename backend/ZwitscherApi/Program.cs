@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using ZwitscherApi.Data;
@@ -66,7 +67,7 @@ record PostResponseDto(
     DateTime CreatedAtUtc,
     DateTime? UpdatedAtUtc,
     bool CanEdit,
-    int LikeCount,
+    [property: JsonNumberHandling(JsonNumberHandling.Strict)] int LikeCount,
     bool LikedByMe
 );
 

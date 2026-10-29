@@ -14,7 +14,6 @@ export interface PostResponseDto {
   /** @nullable */
   updatedAtUtc: string | null;
   canEdit: boolean;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  likeCount: number | string;
+  likeCount: number;
   likedByMe: boolean;
 }
