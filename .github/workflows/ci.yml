@@ -59,3 +59,21 @@ jobs:
 
       - name: Build backend
         run: dotnet build ZwitscherApi.slnx --configuration Release --no-restore
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Check for missing migrations
+        run: >
+          dotnet ef migrations has-pending-model-changes
+          --project ZwitscherApi
+          --configuration Release
+          --no-build
+
+      - name: Verify migrations apply
+        run: >
+          dotnet ef database update
+          --project ZwitscherApi
+          --configuration Release
+          --no-build
+          --connection "Data Source=${{ runner.temp }}/zwitscher-ci.db"
