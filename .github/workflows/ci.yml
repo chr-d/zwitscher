@@ -114,18 +114,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Diagnose AJV resolution
-        run: |
-          node --version
-          npm --version
-          npm ls ajv ajv-draft-04 || true
-          node -e "
-            const { createRequire } = require('node:module');
-            const resolveFromDraft = createRequire(require.resolve('ajv-draft-04'));
-            console.log('Resolved AJV:', resolveFromDraft('ajv/package.json').version);
-            console.log('Core path:', resolveFromDraft.resolve('ajv/dist/core'));
-          "
-
       - name: Generate API client
         run: npm run api:generate
 
