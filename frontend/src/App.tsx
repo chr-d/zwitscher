@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router";
 
 import MainLayout from "@/layouts/MainLayout";
-import Home from "@/routes/home";
+import Home from "@/routes/Home";
 
 function App() {
   return (
