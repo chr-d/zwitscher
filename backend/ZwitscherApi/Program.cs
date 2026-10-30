@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using ZwitscherApi.Data;
 using ZwitscherApi.Endpoints;
+using ZwitscherApi.Models;
 using ZwitscherApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,16 @@ var connectionString =
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+
+builder
+    .Services.AddIdentityCore<User>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 8;
+    })
+    .AddRoles<IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddScoped<IPostService, PostService>();
 
 builder.Services.AddOpenApi();
