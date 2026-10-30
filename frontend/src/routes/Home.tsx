@@ -1,5 +1,24 @@
+import { useGetPosts } from "@/api/generated/posts/posts";
+
 const Home = () => {
-  return <main> This is going to hold the "Posts" </main>;
+  const { data, isLoading, isError } = useGetPosts();
+  if (isLoading) {
+    return <main>Loading...</main>;
+  }
+  if (isError) {
+    return <main>Error loading posts</main>;
+  }
+  return (
+    <main>
+      {" "}
+      {data?.items.map((post) => (
+        <div key={post.id}>
+          <p>{post.author.displayName}</p>
+          {post.content}
+        </div>
+      ))}{" "}
+    </main>
+  );
 };
 
 export default Home;
