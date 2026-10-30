@@ -1,4 +1,4 @@
-import logo from "../data/public/zwitscher.webp";
+import logo from "../assets/zwitscher.webp";
 
 const Header = () => {
   return (
