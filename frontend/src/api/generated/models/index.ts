@@ -6,4 +6,5 @@
  */
 
 export * from "./authorResponseDto";
+export * from "./postPageResponseDto";
 export * from "./postResponseDto";
