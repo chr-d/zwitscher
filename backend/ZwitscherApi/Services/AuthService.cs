@@ -37,6 +37,6 @@ public class AuthService(UserManager<User> userManager) : IAuthService
             return (result, null);
         }
 
-        return (result, new UserResponseDto(user.Id, user.DisplayName, user.Email));
+        return (result, new UserResponseDto(user.Id, user.UserName, user.DisplayName));
     }
 }
