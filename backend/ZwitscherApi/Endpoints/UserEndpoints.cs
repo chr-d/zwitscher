@@ -12,6 +12,7 @@ public static class UserEndpoints
     {
         var users = app.MapGroup("/users").WithTags("Users");
         users
+            .RequireAuthorization()
             .MapGet("/me", GetCurrentUser)
             .WithName("GetCurrentUser")
             .WithSummary("Get the authenticated user's profile");
