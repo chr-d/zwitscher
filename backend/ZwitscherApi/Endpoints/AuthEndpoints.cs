@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using ZwitscherApi.Dtos.Auth;
+using ZwitscherApi.Dtos.Users;
 using ZwitscherApi.Services;
 
 namespace ZwitscherApi.Endpoints;
