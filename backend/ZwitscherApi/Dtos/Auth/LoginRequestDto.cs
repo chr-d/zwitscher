@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ZwitscherApi.Dtos.Auth;
 
-public record LoginRequestDto(string Email, string Password);
+public record LoginRequestDto([Required, EmailAddress] string Email, [Required] string Password);
