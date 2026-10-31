@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using ZwitscherApi.Dtos.Auth;
+using ZwitscherApi.Dtos.Users;
 using ZwitscherApi.Models;
 using ZwitscherApi.Options;
 
@@ -16,7 +17,7 @@ public class AuthService(UserManager<User> userManager, IOptions<JwtOptions> jwt
     private readonly UserManager<User> _userManager = userManager;
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
-    public Task<UserResponseDto?> GetMeAsync(Guid userId)
+    public Task<CurrentUserResponseDto?> GetMeAsync(Guid userId)
     {
         //TODO: GetMeAsync implementation
         throw new NotImplementedException();
