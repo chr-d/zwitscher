@@ -20,7 +20,7 @@ public class AuthService(UserManager<User> userManager) : IAuthService
         throw new NotImplementedException();
     }
 
-    public async Task<(IdentityResult Result, UserResponseDto? User)> RegiserAsync(
+    public async Task<(IdentityResult Result, UserResponseDto? User)> RegisterAsync(
         RegisterRequestDto dto
     )
     {
