@@ -2,11 +2,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using ZwitscherApi.Data;
 using ZwitscherApi.Endpoints;
 using ZwitscherApi.Models;
+using ZwitscherApi.Options;
 using ZwitscherApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,16 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
+
+builder
+    .Services.AddOptions<JwtOptions>()
+    .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
+    .ValidateDataAnnotations()
+    .Validate(
+        options => Encoding.UTF8.GetByteCount(options.Key ?? "") >= 32,
+        "JWT signing key must be at least 32 bytes."
+    )
+    .ValidateOnStart();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 
@@ -27,33 +39,36 @@ builder
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+
 builder
-    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.MapInboundClaims = false;
-
-        var key =
-            builder.Configuration["Jwt:Key"]
-            ?? throw new InvalidOperationException("Jwt:Key is not configured.");
-
-        options.TokenValidationParameters = new TokenValidationParameters
+    .Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<IOptions<JwtOptions>>(
+        (options, jwtOptions) =>
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            var jwt = jwtOptions.Value;
 
-            ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidateAudience = true,
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+            options.MapInboundClaims = false;
 
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
 
-            RequireExpirationTime = true,
-            RequireSignedTokens = true,
-        };
-    });
+                ValidateIssuer = true,
+                ValidIssuer = jwt.Issuer,
+
+                ValidateAudience = true,
+                ValidAudience = jwt.Audience,
+
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+
+                RequireExpirationTime = true,
+                RequireSignedTokens = true,
+            };
+        }
+    );
 
 builder.Services.AddAuthorization();
 
