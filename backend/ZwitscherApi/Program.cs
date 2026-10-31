@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,15 @@ using ZwitscherApi.Options;
 using ZwitscherApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var isOpenApiGeneration = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
+
+if (isOpenApiGeneration)
+{
+    builder.Configuration.AddInMemoryCollection(
+        new Dictionary<string, string?> { ["Jwt:Key"] = new string('x', 32) }
+    );
+}
 
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
