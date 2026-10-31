@@ -24,6 +24,7 @@ builder
     .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddOpenApi();
 
@@ -52,5 +53,6 @@ if (app.Environment.IsDevelopment())
 
 var api = app.MapGroup("/api");
 api.MapPostEndpoints();
+api.MapAuthEndpoints();
 
 app.Run();
