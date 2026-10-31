@@ -18,6 +18,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         modelBuilder.Entity<User>(user =>
         {
             user.Property(u => u.DisplayName).HasMaxLength(50).IsRequired();
+
+            user.Property(u => u.UserName).IsRequired();
+
             user.HasIndex(u => u.NormalizedEmail).IsUnique();
         });
 

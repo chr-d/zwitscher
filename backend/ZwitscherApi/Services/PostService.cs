@@ -14,7 +14,7 @@ public class PostService(AppDbContext db) : IPostService
             .Select(p => new PostResponseDto(
                 p.Id,
                 p.Content,
-                new AuthorResponseDto(p.Author.Id, p.Author.UserName, p.Author.DisplayName),
+                new AuthorResponseDto(p.Author.Id, p.Author.UserName!, p.Author.DisplayName),
                 p.CreatedAtUtc,
                 p.UpdatedAtUtc,
                 false, // TODO:CanEdit logic
