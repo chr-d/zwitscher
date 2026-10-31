@@ -20,10 +20,10 @@ public static class UserEndpoints
 
     private static async Task<Results<Ok<CurrentUserResponseDto>, NotFound>> GetCurrentUser(
         ClaimsPrincipal user,
-        IAuthService authService
+        UserService userService
     )
     {
-        var currentUser = await authService.GetMeAsync(user.GetUserId());
+        var currentUser = await userService.GetMeAsync(user.GetUserId());
         return currentUser is null ? TypedResults.NotFound() : TypedResults.Ok(currentUser);
     }
 }

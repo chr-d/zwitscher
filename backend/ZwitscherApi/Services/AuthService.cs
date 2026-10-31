@@ -17,12 +17,6 @@ public class AuthService(UserManager<User> userManager, IOptions<JwtOptions> jwt
     private readonly UserManager<User> _userManager = userManager;
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
-    public Task<CurrentUserResponseDto?> GetMeAsync(Guid userId)
-    {
-        //TODO: GetMeAsync implementation
-        throw new NotImplementedException();
-    }
-
     public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
