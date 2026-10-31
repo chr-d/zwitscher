@@ -119,5 +119,6 @@ if (app.Environment.IsDevelopment())
 var api = app.MapGroup("/api");
 api.MapPostEndpoints();
 api.MapAuthEndpoints();
+api.MapUserEndpoints();
 
 app.Run();
