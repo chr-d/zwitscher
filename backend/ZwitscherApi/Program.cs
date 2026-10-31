@@ -18,6 +18,7 @@ builder
     .Services.AddIdentityCore<User>(options =>
     {
         options.User.RequireUniqueEmail = true;
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyz0123456789_";
         options.Password.RequiredLength = 8;
     })
     .AddRoles<IdentityRole<Guid>>()
@@ -27,6 +28,8 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddOpenApi();
+builder.Services.AddValidation();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddCors(options =>
 {
