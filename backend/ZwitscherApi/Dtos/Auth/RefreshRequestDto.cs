@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ZwitscherApi.Dtos.Auth;
 
-public record RefreshRequestDto(string RefreshToken);
+public record RefreshRequestDto([Required] string RefreshToken);
