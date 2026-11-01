@@ -14,11 +14,14 @@ public static class AuthEndpoints
         auth.MapPost("/login", Login)
             .WithName("Login")
             .WithSummary("Authenticate a user and issue token")
-            .ProducesValidationProblem();
+            .ProducesValidationProblem()
+            .Produces(StatusCodes.Status401Unauthorized);
         auth.MapPost("/refresh", Refresh)
             .WithName("Refresh")
             .WithSummary("Refresh an access token using a refresh token")
-            .ProducesValidationProblem();
+            .ProducesValidationProblem()
+            .Produces(StatusCodes.Status401Unauthorized);
+        ;
     }
 
     private static async Task<Results<Created<UserResponseDto>, ValidationProblem>> Register(
