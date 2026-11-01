@@ -15,6 +15,10 @@ public static class AuthEndpoints
             .WithName("Login")
             .WithSummary("Authenticate a user and issue token")
             .ProducesValidationProblem();
+        auth.MapPost("/refresh", Refresh)
+            .WithName("Refresh")
+            .WithSummary("Refresh an access token using a refresh token")
+            .ProducesValidationProblem();
     }
 
     private static async Task<Results<Created<UserResponseDto>, ValidationProblem>> Register(
@@ -42,6 +46,15 @@ public static class AuthEndpoints
     )
     {
         var response = await authService.LoginAsync(dto);
+        return response is null ? TypedResults.Unauthorized() : TypedResults.Ok(response);
+    }
+
+    private static async Task<Results<Ok<LoginResponseDto>, UnauthorizedHttpResult>> Refresh(
+        RefreshRequestDto dto,
+        IAuthService authService
+    )
+    {
+        var response = await authService.RefreshAsync(dto);
         return response is null ? TypedResults.Unauthorized() : TypedResults.Ok(response);
     }
 }

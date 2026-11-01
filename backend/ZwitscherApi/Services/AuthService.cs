@@ -76,9 +76,11 @@ public class AuthService(
         return (result, new UserResponseDto(user.Id, user.UserName, user.DisplayName));
     }
 
-    public async Task<LoginResponseDto?> RefreshAsync(string refreshToken)
+    public async Task<LoginResponseDto?> RefreshAsync(RefreshRequestDto dto)
     {
-        var existing = await _db.RefreshTokens.FirstOrDefaultAsync(t => t.Token == refreshToken);
+        var existing = await _db.RefreshTokens.FirstOrDefaultAsync(t =>
+            t.Token == dto.RefreshToken
+        );
         if (existing is null)
         {
             return null;
