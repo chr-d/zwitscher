@@ -112,7 +112,8 @@ builder.Services.AddOpenApi(options =>
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
-                Description = "Paste the token returned by POST /api/auth/login.",
+                Description =
+                    "Paste accessToken returned by POST /api/auth/login or POST /api/auth/refresh",
             };
             return Task.CompletedTask;
         }
