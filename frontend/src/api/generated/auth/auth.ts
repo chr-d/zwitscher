@@ -16,6 +16,7 @@ import type {
   HttpValidationProblemDetails,
   LoginRequestDto,
   LoginResponseDto,
+  RefreshRequestDto,
   RegisterRequestDto,
   UserResponseDto,
 } from "../models";
@@ -215,7 +216,7 @@ export const getLoginMutationKey = () => ["login"] as const;
 
 export const getLoginMutationOptions = <
   TError = globalThis.Error & {
-    info?: HttpValidationProblemDetails;
+    info?: HttpValidationProblemDetails | void;
     status?: number;
   },
   TContext = unknown,
@@ -259,7 +260,7 @@ export type LoginMutationResult = NonNullable<
 >;
 export type LoginMutationBody = LoginRequestDto;
 export type LoginMutationError = globalThis.Error & {
-  info?: HttpValidationProblemDetails;
+  info?: HttpValidationProblemDetails | void;
   status?: number;
 };
 export type LoginMutationVariables = { data: LoginRequestDto };
@@ -269,7 +270,7 @@ export type LoginMutationVariables = { data: LoginRequestDto };
  */
 export const useLogin = <
   TError = globalThis.Error & {
-    info?: HttpValidationProblemDetails;
+    info?: HttpValidationProblemDetails | void;
     status?: number;
   },
   TContext = unknown,
@@ -291,4 +292,140 @@ export const useLogin = <
   TContext
 > => {
   return useMutation(getLoginMutationOptions(options), queryClient);
+};
+export const getRefreshUrl = () => {
+  return `${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh`;
+};
+
+/**
+ * @summary Refresh an access token using a refresh token
+ */
+export const refresh = async (
+  refreshRequestDto: RefreshRequestDto,
+  options?: RequestInit,
+): Promise<LoginResponseDto> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(
+          h as Iterable<Iterable<string>>,
+          (entry) => Array.from(entry) as [string, string],
+        ),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<
+      string | readonly string[] | undefined
+    >(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  const res = await fetch(getRefreshUrl(), {
+    ...options,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getHeaders(options?.headers),
+    },
+    body: JSON.stringify(refreshRequestDto),
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: LoginResponseDto; status?: number } =
+      new globalThis.Error();
+    const data: LoginResponseDto = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: LoginResponseDto = body ? JSON.parse(body) : {};
+  return data;
+};
+
+export const getRefreshMutationKey = () => ["refresh"] as const;
+
+export const getRefreshMutationOptions = <
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refresh>>,
+    TError,
+    RefreshMutationVariables,
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof refresh>>,
+  TError,
+  RefreshMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRefreshMutationKey();
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof refresh>>,
+    RefreshMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return refresh(data, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RefreshMutationResult = NonNullable<
+  Awaited<ReturnType<typeof refresh>>
+>;
+export type RefreshMutationBody = RefreshRequestDto;
+export type RefreshMutationError = globalThis.Error & {
+  info?: HttpValidationProblemDetails | void;
+  status?: number;
+};
+export type RefreshMutationVariables = { data: RefreshRequestDto };
+
+/**
+ * @summary Refresh an access token using a refresh token
+ */
+export const useRefresh = <
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof refresh>>,
+      TError,
+      RefreshMutationVariables,
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof refresh>>,
+  TError,
+  RefreshMutationVariables,
+  TContext
+> => {
+  return useMutation(getRefreshMutationOptions(options), queryClient);
 };

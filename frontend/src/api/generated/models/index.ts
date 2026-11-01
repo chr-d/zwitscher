@@ -13,5 +13,6 @@ export * from "./loginRequestDto";
 export * from "./loginResponseDto";
 export * from "./postPageResponseDto";
 export * from "./postResponseDto";
+export * from "./refreshRequestDto";
 export * from "./registerRequestDto";
 export * from "./userResponseDto";

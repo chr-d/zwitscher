@@ -6,6 +6,8 @@
  */
 
 export interface LoginResponseDto {
-  token: string;
-  expiresAtUtc: string;
+  accessToken: string;
+  accessExpiresAtUtc: string;
+  refreshToken: string;
+  refreshExpiresAtUtc: string;
 }
