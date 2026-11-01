@@ -32,16 +32,17 @@ public class AuthService(
             return null;
         }
 
-        var accessExpiresAtUtc = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiryMinutes);
+        var now = DateTime.UtcNow;
+        var accessExpiresAtUtc = now.AddMinutes(_jwtOptions.ExpiryMinutes);
         var accessToken = CreateToken(user, accessExpiresAtUtc);
         var refreshToken = CreateRefreshToken();
-        var refreshExpiresAtUtc = DateTime.UtcNow.AddDays(30); //TODO: add refresh token expiry to config
+        var refreshExpiresAtUtc = now.AddDays(_jwtOptions.RefreshTokenExpiryDays);
         _db.RefreshTokens.Add(
             new RefreshToken
             {
                 Token = refreshToken,
                 UserId = user.Id,
-                CreatedAtUtc = DateTime.UtcNow,
+                CreatedAtUtc = now,
                 ExpiresAtUtc = refreshExpiresAtUtc,
             }
         );
@@ -102,9 +103,10 @@ public class AuthService(
 
         // every refresh invalidates the old token and issues a new one
         var newRefreshToken = CreateRefreshToken();
-        var refreshExpiresAt = DateTime.UtcNow.AddDays(30); //TODO: add refresh token expiry to config
+        var now = DateTime.UtcNow;
+        var refreshExpiresAt = now.AddDays(_jwtOptions.RefreshTokenExpiryDays);
 
-        existing.RevokedAtUtc = DateTime.UtcNow;
+        existing.RevokedAtUtc = now;
         existing.ReplacedByToken = newRefreshToken;
 
         _db.RefreshTokens.Add(
@@ -112,13 +114,13 @@ public class AuthService(
             {
                 Token = newRefreshToken,
                 UserId = user.Id,
-                CreatedAtUtc = DateTime.UtcNow,
+                CreatedAtUtc = now,
                 ExpiresAtUtc = refreshExpiresAt,
             }
         );
         await _db.SaveChangesAsync();
 
-        var accessExpiresAt = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiryMinutes);
+        var accessExpiresAt = now.AddMinutes(_jwtOptions.ExpiryMinutes);
         var accessToken = CreateToken(user, accessExpiresAt);
 
         return new LoginResponseDto(
