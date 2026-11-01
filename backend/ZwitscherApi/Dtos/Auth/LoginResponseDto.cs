@@ -1,3 +1,8 @@
 namespace ZwitscherApi.Dtos.Auth;
 
-public record LoginResponseDto(string Token, DateTime ExpiresAtUtc);
+public record LoginResponseDto(
+    string AccessToken,
+    DateTime AccessExpiresAtUtc,
+    string RefreshToken,
+    DateTime RefreshExpiresAtUtc
+);
