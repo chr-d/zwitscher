@@ -6,4 +6,13 @@
  */
 
 export * from "./authorResponseDto";
+export * from "./currentUserResponseDto";
+export * from "./httpValidationProblemDetails";
+export * from "./httpValidationProblemDetailsErrors";
+export * from "./loginRequestDto";
+export * from "./loginResponseDto";
+export * from "./postPageResponseDto";
 export * from "./postResponseDto";
+export * from "./refreshRequestDto";
+export * from "./registerRequestDto";
+export * from "./userResponseDto";

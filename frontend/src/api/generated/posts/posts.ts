@@ -17,7 +17,7 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { PostResponseDto } from "../models";
+import type { PostPageResponseDto } from "../models";
 
 const withQueryKey = <T extends object, K>(
   query: T,
@@ -38,15 +38,15 @@ const withQueryKey = <T extends object, K>(
 };
 
 export const getGetPostsUrl = () => {
-  return `${import.meta.env.VITE_API_BASE_URL}/posts`;
+  return `${import.meta.env.VITE_API_BASE_URL}/api/posts`;
 };
 
 /**
- * @summary Return a sample feed for the first frontend/API connection
+ * @summary Get a list of posts, newest first
  */
 export const getPosts = async (
   options?: RequestInit,
-): Promise<PostResponseDto> => {
+): Promise<PostPageResponseDto> => {
   const res = await fetch(getGetPostsUrl(), {
     ...options,
     method: "GET",
@@ -61,12 +61,12 @@ export const getPosts = async (
     err.status = res.status;
     throw err;
   }
-  const data: PostResponseDto = body ? JSON.parse(body) : {};
+  const data: PostPageResponseDto = body ? JSON.parse(body) : {};
   return data;
 };
 
 export const getGetPostsQueryKey = () => {
-  return [`${import.meta.env.VITE_API_BASE_URL}/posts`] as const;
+  return [`${import.meta.env.VITE_API_BASE_URL}/api/posts`] as const;
 };
 
 export const getGetPostsQueryOptions = <
@@ -160,7 +160,7 @@ export function useGetPosts<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
- * @summary Return a sample feed for the first frontend/API connection
+ * @summary Get a list of posts, newest first
  */
 
 export function useGetPosts<
