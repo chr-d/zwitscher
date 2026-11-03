@@ -13,10 +13,7 @@ type AuthContextValue = {
   error: string | null;
   login: (data: LoginRequestDto) => Promise<void>;
   logout: () => void;
-  request: <T>(
-    call: ApiRequest<T>,
-    options?: { allowAnonymous?: boolean },
-  ) => Promise<T>;
+  request: <T>(call: ApiRequest<T>) => Promise<T>;
 };
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
