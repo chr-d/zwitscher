@@ -8,6 +8,7 @@ import type {
 export type ApiRequest<T> = (options: RequestInit) => Promise<T>;
 
 type AuthContextValue = {
+  hasSession: boolean;
   user: CurrentUserResponseDto | null;
   isLoading: boolean;
   error: string | null;

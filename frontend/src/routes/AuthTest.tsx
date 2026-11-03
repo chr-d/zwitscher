@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/auth/AuthContext";
 
 export default function AuthTest() {
-  const { user, isLoading, error, login, logout } = useAuth();
+  const { hasSession, user, isLoading, error, login, logout } = useAuth();
   const [loginError, setLoginError] = useState<string | null>(null);
 
   async function handleLogin(event: React.SubmitEvent<HTMLFormElement>) {
@@ -48,7 +48,7 @@ export default function AuthTest() {
           </label>
         </p>
         <p>
-          {!user ? (
+          {!hasSession ? (
             <button type="submit" disabled={isLoading} className="btn">
               Log in
             </button>
@@ -71,9 +71,11 @@ export default function AuthTest() {
       <p>
         {isLoading
           ? "Loading session..."
-          : user
-            ? `Logged in as ${user.userName}.`
-            : "Not logged in."}
+          : !hasSession
+            ? "Not logged in."
+            : user
+              ? `Logged in as ${user.userName}.`
+              : "Couldn't load your profile."}
       </p>
       {displayedError && <p>Error: {displayedError}</p>}
 

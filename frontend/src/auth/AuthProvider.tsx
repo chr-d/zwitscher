@@ -38,6 +38,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext
       value={{
+        hasSession: auth.hasSession,
         user,
         isLoading,
         error,
