@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ZwitscherApi.Models;
 
 namespace ZwitscherApi.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options)
+    : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
-    public DbSet<User> Users => Set<User>();
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<Like> Likes => Set<Like>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -15,13 +18,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<User>(user =>
         {
-            user.HasKey(u => u.Id);
-
-            user.Property(u => u.UserName).HasMaxLength(30).IsRequired();
-
             user.Property(u => u.DisplayName).HasMaxLength(50).IsRequired();
 
-            user.HasIndex(u => u.UserName).IsUnique();
+            user.Property(u => u.UserName).IsRequired();
+
+            user.HasIndex(u => u.NormalizedEmail).IsUnique();
         });
 
         modelBuilder.Entity<Post>(post =>
