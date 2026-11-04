@@ -60,6 +60,9 @@ jobs:
       - name: Build backend
         run: dotnet build ZwitscherApi.slnx --configuration Release --no-restore
 
+      - name: Run backend tests
+        run: dotnet test ZwitscherApi.slnx --configuration Release --no-build
+
       - name: Upload OpenAPI document
         uses: actions/upload-artifact@v7
         with:
