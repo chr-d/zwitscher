@@ -6,6 +6,7 @@
  */
 
 export * from "./authorResponseDto";
+export * from "./createPostRequestDto";
 export * from "./currentUserResponseDto";
 export * from "./httpValidationProblemDetails";
 export * from "./httpValidationProblemDetailsErrors";
