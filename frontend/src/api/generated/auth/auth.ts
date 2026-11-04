@@ -31,6 +31,7 @@ export const getRegisterUrl = () => {
 export const register = async (
   registerRequestDto: RegisterRequestDto,
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<UserResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
@@ -53,7 +54,7 @@ export const register = async (
     }
     return headers;
   };
-  const res = await fetch(getRegisterUrl(), {
+  const res = await (fetchFn ?? fetch)(getRegisterUrl(), {
     ...options,
     method: "POST",
     headers: {
@@ -92,6 +93,7 @@ export const getRegisterMutationOptions = <
     TContext
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof register>>,
   TError,
@@ -99,7 +101,11 @@ export const getRegisterMutationOptions = <
   TContext
 > => {
   const mutationKey = getRegisterMutationKey();
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
@@ -113,7 +119,7 @@ export const getRegisterMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return register(data, fetchOptions);
+    return register(data, fetchOptions, fetcherFn);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -147,6 +153,7 @@ export const useRegister = <
       TContext
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -167,6 +174,7 @@ export const getLoginUrl = () => {
 export const login = async (
   loginRequestDto: LoginRequestDto,
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<LoginResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
@@ -189,7 +197,7 @@ export const login = async (
     }
     return headers;
   };
-  const res = await fetch(getLoginUrl(), {
+  const res = await (fetchFn ?? fetch)(getLoginUrl(), {
     ...options,
     method: "POST",
     headers: {
@@ -228,6 +236,7 @@ export const getLoginMutationOptions = <
     TContext
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof login>>,
   TError,
@@ -235,7 +244,11 @@ export const getLoginMutationOptions = <
   TContext
 > => {
   const mutationKey = getLoginMutationKey();
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
@@ -249,7 +262,7 @@ export const getLoginMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return login(data, fetchOptions);
+    return login(data, fetchOptions, fetcherFn);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -283,6 +296,7 @@ export const useLogin = <
       TContext
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -303,6 +317,7 @@ export const getRefreshUrl = () => {
 export const refresh = async (
   refreshRequestDto: RefreshRequestDto,
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<LoginResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
@@ -325,7 +340,7 @@ export const refresh = async (
     }
     return headers;
   };
-  const res = await fetch(getRefreshUrl(), {
+  const res = await (fetchFn ?? fetch)(getRefreshUrl(), {
     ...options,
     method: "POST",
     headers: {
@@ -364,6 +379,7 @@ export const getRefreshMutationOptions = <
     TContext
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof refresh>>,
   TError,
@@ -371,7 +387,11 @@ export const getRefreshMutationOptions = <
   TContext
 > => {
   const mutationKey = getRefreshMutationKey();
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
@@ -385,7 +405,7 @@ export const getRefreshMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return refresh(data, fetchOptions);
+    return refresh(data, fetchOptions, fetcherFn);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -419,6 +439,7 @@ export const useRefresh = <
       TContext
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
