@@ -5,8 +5,6 @@ import type {
   LoginRequestDto,
 } from "@/api/generated/models";
 
-export type ApiRequest<T> = (options: RequestInit) => Promise<T>;
-
 type AuthContextValue = {
   hasSession: boolean;
   user: CurrentUserResponseDto | null;
@@ -14,7 +12,7 @@ type AuthContextValue = {
   error: string | null;
   login: (data: LoginRequestDto) => Promise<void>;
   logout: () => void;
-  request: <T>(call: ApiRequest<T>) => Promise<T>;
+  authFetch: typeof fetch;
 };
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
