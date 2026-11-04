@@ -10,6 +10,7 @@ using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using ZwitscherApi.Data;
 using ZwitscherApi.Endpoints;
+using ZwitscherApi.Errors;
 using ZwitscherApi.Models;
 using ZwitscherApi.Options;
 using ZwitscherApi.Services;
@@ -148,6 +149,9 @@ builder.Services.AddValidation();
 // Register problem-details services
 builder.Services.AddProblemDetails();
 
+// Register global exception handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 // Register CORS policy to allow local frontend access during development
 builder.Services.AddCors(options =>
 {
@@ -164,6 +168,9 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Enable exception handler middleware
+app.UseExceptionHandler();
 
 // Enable local frontend access and API documentation only in development
 if (app.Environment.IsDevelopment())
