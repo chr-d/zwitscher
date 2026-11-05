@@ -55,7 +55,7 @@ const LikeButton = ({
       disabled={isPending}
       className="cursor-pointer"
     >
-      {isLiked ? <Heart weight="Filled" /> : <Heart />}
+      {isLiked ? <Heart weight="Filled" color="red" /> : <Heart color="red" />}
     </button>
   );
 };
