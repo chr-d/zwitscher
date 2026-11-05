@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ZwitscherApi.Errors;
 
@@ -16,6 +17,10 @@ public class GlobalExceptionHandler(
     {
         var (statusCode, title) = exception switch
         {
+            DbUpdateConcurrencyException => (
+                StatusCodes.Status503ServiceUnavailable,
+                "Concurrent changes prevented the request. Please try again."
+            ),
             BadHttpRequestException badRequest => (
                 badRequest.StatusCode,
                 "The request could not be processed."
