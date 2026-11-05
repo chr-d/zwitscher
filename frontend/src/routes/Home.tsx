@@ -1,9 +1,12 @@
 import { useGetPosts } from "@/api/generated/posts/posts";
+import { useAuth } from "@/auth/AuthContext";
 import PostCard from "@/components/PostCard";
 
 const Home = () => {
-  // const { mutate } = useCreatePost();
-  const { data, isLoading, isError } = useGetPosts();
+  const { hasSession, authFetch } = useAuth();
+  const { data, isLoading, isError } = useGetPosts({
+    fetcher: hasSession ? authFetch : fetch,
+  });
   if (isLoading) {
     return <main>Loading...</main>;
   }
