@@ -1,6 +1,7 @@
-import { useGetPosts } from "@/api/generated/posts/posts";
+import { useCreatePost, useGetPosts } from "@/api/generated/posts/posts";
 
 const Home = () => {
+  const { mutate } = useCreatePost();
   const { data, isLoading, isError } = useGetPosts();
   if (isLoading) {
     return <main>Loading...</main>;
@@ -10,13 +11,12 @@ const Home = () => {
   }
   return (
     <main>
-      {" "}
       {data?.items.map((post) => (
         <div key={post.id}>
           <p>{post.author.displayName}</p>
           {post.content}
         </div>
-      ))}{" "}
+      ))}
     </main>
   );
 };
