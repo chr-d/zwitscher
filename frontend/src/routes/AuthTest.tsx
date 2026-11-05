@@ -58,7 +58,7 @@ export default function AuthTest() {
               onClick={(e) => {
                 e.preventDefault();
                 setLoginError(null);
-                logout();
+                void logout();
               }}
               className="btn"
             >
