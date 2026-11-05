@@ -25,6 +25,7 @@ export default defineConfig({
           signal: true,
         },
         fetch: {
+          useRuntimeFetcher: true,
           includeHttpResponseReturnType: false,
           forceSuccessResponse: true,
         },

@@ -3,7 +3,6 @@ import { useRef, useState } from "react";
 
 import { refresh, useLogin } from "@/api/generated/auth/auth";
 import type { LoginRequestDto, LoginResponseDto } from "@/api/generated/models";
-import type { ApiRequest } from "@/auth/AuthContext";
 import { getRefreshToken, saveRefreshToken } from "@/auth/tokenStorage";
 
 type Session = {
@@ -129,31 +128,42 @@ export function useAuthSession() {
   }
 
   /**
-   *Make an API request with an access token, refreshing it first if needed.
-   * @param call Function that sends the request using the provided auth headers
-   * @returns The result of the API request
+   * Fetch with an access token, refreshing it first if needed.
+   * Pass as the fetcher option to generated hooks that need authentication.
    */
-  async function request<T>(call: ApiRequest<T>): Promise<T> {
+  async function authFetch(
+    input: RequestInfo | URL,
+    options?: RequestInit,
+  ): Promise<Response> {
     const version = currentSession.current.version;
 
     async function send(accessToken: string) {
       validateSessionVersion(version);
-      const result = await call({
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const headers = new Headers(
+        input instanceof Request ? input.headers : undefined,
+      );
+      new Headers(options?.headers).forEach((value, name) =>
+        headers.set(name, value),
+      );
+      headers.set("Authorization", `Bearer ${accessToken}`);
+
+      const result = await fetch(
+        input instanceof Request ? input.clone() : input,
+        {
+          ...options,
+          headers,
+        },
+      );
       validateSessionVersion(version);
-      setError(null);
+      if (result.ok) setError(null);
       return result;
     }
 
     // Get a usable token and make the request
     const token = await getAccessToken();
-    try {
-      return await send(token);
-    } catch (error) {
-      validateSessionVersion(version);
-      if (getHttpStatus(error) !== 401) throw error;
-    }
+    const result = await send(token);
+    if (result.status !== 401) return result;
+    await result.body?.cancel();
 
     // 401 means the API rejected the token
     // Get a replacement, unless another request has already refreshed it
@@ -166,13 +176,9 @@ export function useAuthSession() {
     }
 
     // Retry once, a second 401 ends the session instead of starting a loop
-    try {
-      return await send(retryToken);
-    } catch (error) {
-      validateSessionVersion(version);
-      if (getHttpStatus(error) === 401) expireSession();
-      throw error;
-    }
+    const retryResult = await send(retryToken);
+    if (retryResult.status === 401) expireSession();
+    return retryResult;
   }
 
   return {
@@ -182,6 +188,6 @@ export function useAuthSession() {
     error,
     login,
     logout,
-    request,
+    authFetch,
   };
 }
