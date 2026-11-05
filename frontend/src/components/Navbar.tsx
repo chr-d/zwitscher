@@ -1,3 +1,4 @@
+import { NavLink } from "react-router";
 import { Heart, Home6, User } from "reicon-react";
 
 const Navbar = () => {
@@ -8,7 +9,9 @@ const Navbar = () => {
           <Heart weight="Filled" color="#85C8F2" />
         </button>
         <button className="btn btn-square btn-ghost">
-          <Home6 weight="Filled" color="#85C8F2" />
+          <NavLink to="/">
+            <Home6 weight="Filled" color="#85C8F2" />
+          </NavLink>
         </button>
         <button className="btn btn-square btn-ghost">
           <User weight="Filled" color="#85C8F2" />
