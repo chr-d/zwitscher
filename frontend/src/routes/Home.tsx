@@ -11,7 +11,7 @@ const Home = () => {
     return <main>Error loading posts</main>;
   }
   return (
-    <main>
+    <main className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-[#30383C]">
       {data?.items.map((post) => (
         <PostCard post={post} />
       ))}
