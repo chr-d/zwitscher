@@ -3,7 +3,7 @@ const PostCard = ({ post }) => {
   const Post = post;
 
   return (
-    <div className="card m-[16px] min-h-[330px] w-[calc(100%_-_24px)] max-w-[600px] overflow-hidden rounded-[30px] border-[3px] border-[#5AA9E6] bg-[#D4D4D4] text-[#151515] max-[500px]:min-h-[250px] max-[500px]:rounded-[22px] max-[500px]:border-2">
+    <div className="card m-[16px] min-h-[330px] w-[calc(100%_-_24px)] max-w-[600px] overflow-hidden rounded-[30px] border-[3px] border-[#83C1EC] bg-[#D4D4D4] text-[#151515] max-[500px]:min-h-[250px] max-[500px]:rounded-[22px] max-[500px]:border-2">
       <div
         id="postHead"
         className="shrink-0 border-b border-[#5AA9E6] bg-[#83C1EC] px-6 py-4 max-[500px]:px-4 max-[500px]:py-3"
@@ -32,7 +32,7 @@ const PostCard = ({ post }) => {
         id="likes"
         className="card-actions px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
       >
-        <p className="flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
+        <p className="flex cursor-pointer items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
           <span aria-hidden="true" className="text-xl max-[500px]:text-lg">
             ❤️
           </span>
