@@ -16,6 +16,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     {
         base.OnModelCreating(modelBuilder);
 
+        // Refresh and revoke must fail if another request has already revoked the token
+        modelBuilder
+            .Entity<RefreshToken>()
+            .Property(token => token.RevokedAtUtc)
+            .IsConcurrencyToken();
+
         modelBuilder.Entity<User>(user =>
         {
             user.Property(u => u.DisplayName).HasMaxLength(50).IsRequired();

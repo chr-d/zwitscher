@@ -46,8 +46,9 @@ export const getGetCurrentUserUrl = () => {
  */
 export const getCurrentUser = async (
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<CurrentUserResponseDto> => {
-  const res = await fetch(getGetCurrentUserUrl(), {
+  const res = await (fetchFn ?? fetch)(getGetCurrentUserUrl(), {
     ...options,
     method: "GET",
   });
@@ -79,14 +80,19 @@ export const getGetCurrentUserQueryOptions = <
     UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const {
+    query: queryOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getGetCurrentUserQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentUser>>> = ({
     signal,
-  }) => getCurrentUser({ signal, ...fetchOptions });
+  }) => getCurrentUser({ signal, ...fetchOptions }, fetcherFn);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getCurrentUser>>,
@@ -120,6 +126,7 @@ export function useGetCurrentUser<
         "initialData"
       >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -142,6 +149,7 @@ export function useGetCurrentUser<
         "initialData"
       >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -156,6 +164,7 @@ export function useGetCurrentUser<
       UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -174,6 +183,7 @@ export function useGetCurrentUser<
       UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
