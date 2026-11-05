@@ -1,13 +1,20 @@
-const PostCard = () => {
-  <div>
-    <div id="postHead">
-      <h2 id="anzeigename">KirschKarl77</h2>
-      <p id="benutzername">Karl</p>
+const PostCard = ({ post }) => {
+  // const {id, } = post;
+  const Post = post;
+
+  return (
+    <div>
+      <div id="postHead">
+        <h2 id="displayName">{Post.author.displayName}</h2>
+      </div>
+      <div id="postBody">
+        <p id="postContent">{Post.content}</p>
+      </div>
+      <div id="likes">
+        <p>❤️12</p>
+      </div>
     </div>
-    <div id="postBody">
-      <p id="postContent"></p>
-    </div>
-  </div>;
+  );
 };
 
 export default PostCard;
