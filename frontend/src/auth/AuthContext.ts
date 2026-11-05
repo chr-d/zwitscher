@@ -11,7 +11,7 @@ type AuthContextValue = {
   isLoading: boolean;
   error: string | null;
   login: (data: LoginRequestDto) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   authFetch: typeof fetch;
 };
 

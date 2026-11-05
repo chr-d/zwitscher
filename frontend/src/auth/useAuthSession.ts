@@ -1,7 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 
-import { refresh, useLogin } from "@/api/generated/auth/auth";
+import {
+  logout as apiLogout,
+  refresh,
+  useLogin,
+} from "@/api/generated/auth/auth";
 import type { LoginRequestDto, LoginResponseDto } from "@/api/generated/models";
 import { getRefreshToken, saveRefreshToken } from "@/auth/tokenStorage";
 
@@ -9,6 +13,11 @@ type Session = {
   // Login/logout change version, refreshing tokens keeps the same version
   version: number;
   tokens: LoginResponseDto | null;
+};
+
+type PendingRefresh = {
+  tokens: Promise<LoginResponseDto>;
+  accessToken: Promise<string>;
 };
 
 const REFRESH_EARLY_MS = 30_000;
@@ -27,7 +36,7 @@ export function useAuthSession() {
   const currentSession = useRef(session);
 
   // Requests share any token refresh already in progress
-  const pendingRefreshRequest = useRef<Promise<string> | null>(null);
+  const pendingRefreshRequest = useRef<PendingRefresh | null>(null);
 
   // Ensure that the session hasn't changed since the caller started an operation
   function validateSessionVersion(version: number) {
@@ -61,18 +70,49 @@ export function useAuthSession() {
     replaceSession(tokens);
   }
 
-  function logout() {
+  async function logout(): Promise<void> {
+    let tokens = currentSession.current.tokens;
+    const refreshToken = getRefreshToken();
+    const pendingRefresh = pendingRefreshRequest.current;
     replaceSession(null);
+
+    if (!refreshToken) return;
+
+    try {
+      // If a refresh was already running, wait for its newest tokens
+      if (pendingRefresh) tokens = await pendingRefresh.tokens;
+      // Server logout needs a valid access token
+      if (
+        !tokens ||
+        Date.parse(tokens.accessExpiresAtUtc) <= Date.now() + REFRESH_EARLY_MS
+      ) {
+        tokens = await refresh({
+          // Prefer the newest refresh token, falling back to the saved one.
+          refreshToken: tokens?.refreshToken ?? refreshToken,
+        });
+      }
+
+      // Send the tokens directly because authFetch checks a session that is already cleared.
+      await apiLogout(
+        { refreshToken: tokens.refreshToken },
+        { headers: { Authorization: `Bearer ${tokens.accessToken}` } },
+      );
+    } catch {
+      //TODO: Signed out locally but server logout not confirmed
+    }
   }
 
   function expireSession() {
-    logout();
+    replaceSession(null);
     setError("Your session expired. Please log in again.");
   }
 
-  async function performRefresh(refreshToken: string, version: number) {
+  async function performRefresh(
+    request: Promise<LoginResponseDto>,
+    version: number,
+  ) {
     try {
-      const tokens = await refresh({ refreshToken });
+      const tokens = await request;
       validateSessionVersion(version);
       updateSession({ version, tokens });
       return tokens.accessToken;
@@ -97,7 +137,8 @@ export function useAuthSession() {
 
   function refreshAccessToken(): Promise<string> {
     // If a refresh is already in progress, return the same promise instead of starting a new one
-    if (pendingRefreshRequest.current) return pendingRefreshRequest.current;
+    if (pendingRefreshRequest.current)
+      return pendingRefreshRequest.current.accessToken;
 
     // Without a refresh token no refresh is possible
     const refreshToken = getRefreshToken();
@@ -106,11 +147,10 @@ export function useAuthSession() {
     }
 
     // Start a new refresh request
-    pendingRefreshRequest.current = performRefresh(
-      refreshToken,
-      currentSession.current.version,
-    );
-    return pendingRefreshRequest.current;
+    const tokens = refresh({ refreshToken });
+    const accessToken = performRefresh(tokens, currentSession.current.version);
+    pendingRefreshRequest.current = { tokens, accessToken };
+    return accessToken;
   }
 
   // Use the current access token, or refresh if it is missing/expiring soon
@@ -164,6 +204,7 @@ export function useAuthSession() {
     const result = await send(token);
     if (result.status !== 401) return result;
     await result.body?.cancel();
+    validateSessionVersion(version);
 
     // 401 means the API rejected the token
     // Get a replacement, unless another request has already refreshed it
