@@ -1,7 +1,8 @@
-import { useCreatePost, useGetPosts } from "@/api/generated/posts/posts";
+import { useGetPosts } from "@/api/generated/posts/posts";
+import PostCard from "@/components/PostCard";
 
 const Home = () => {
-  const { mutate } = useCreatePost();
+  // const { mutate } = useCreatePost();
   const { data, isLoading, isError } = useGetPosts();
   if (isLoading) {
     return <main>Loading...</main>;
@@ -10,12 +11,9 @@ const Home = () => {
     return <main>Error loading posts</main>;
   }
   return (
-    <main>
+    <main className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-[#30383C]">
       {data?.items.map((post) => (
-        <div key={post.id}>
-          <p>{post.author.displayName}</p>
-          {post.content}
-        </div>
+        <PostCard post={post} />
       ))}
     </main>
   );
