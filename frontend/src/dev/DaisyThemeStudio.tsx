@@ -150,6 +150,7 @@ const PALETTE_FAMILIES = PALETTE_NAMES.filter(
   (family) => tailwindColors[family]?.[50],
 );
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const DAISYUI_BUILTIN_THEMES = [
   "light",
   "dark",
@@ -565,6 +566,7 @@ function FinePicker({ value, onPick }: ColorPickerProps) {
   const [invalid, setInvalid] = useState(false);
   const [dirty, setDirty] = useState(false);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraft(formatColor(value, format));
     setInvalid(false);
     setDirty(false);
