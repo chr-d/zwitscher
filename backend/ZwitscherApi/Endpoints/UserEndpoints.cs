@@ -49,4 +49,13 @@ public static class UserEndpoints
         var result = await postService.GetByUserAsync(id, currentUserId);
         return TypedResults.Ok(result);
     }
+
+    private static async Task<Results<Ok<PostPageResponseDto>, ValidationProblem>> GetLikedPosts(
+        ClaimsPrincipal user,
+        IPostService postService
+    )
+    {
+        var result = await postService.GetLikedByUserAsync(user.GetUserId());
+        return TypedResults.Ok(result);
+    }
 }
