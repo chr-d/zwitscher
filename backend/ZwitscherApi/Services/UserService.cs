@@ -16,4 +16,13 @@ public class UserService(AppDbContext db) : IUserService
             .Select(u => new CurrentUserResponseDto(u.Id, u.UserName!, u.DisplayName, u.Email!))
             .FirstOrDefaultAsync();
     }
+
+    public async Task<UserResponseDto?> GetByIdAsync(Guid id)
+    {
+        return await _db
+            .Users.AsNoTracking()
+            .Where(u => u.Id == id)
+            .Select(u => new UserResponseDto(u.Id, u.UserName!, u.DisplayName))
+            .FirstOrDefaultAsync();
+    }
 }
