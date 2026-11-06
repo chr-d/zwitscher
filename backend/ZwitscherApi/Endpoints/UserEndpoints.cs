@@ -13,16 +13,15 @@ public static class UserEndpoints
     {
         var users = app.MapGroup("/users").WithTags("Users");
         users
-            .RequireAuthorization()
             .MapGet("/me", GetCurrentUser)
             .WithName("GetCurrentUser")
-            .WithSummary("Get the authenticated user's profile");
+            .WithSummary("Get the authenticated user's profile")
+            .RequireAuthorization();
+
         users
-            .MapGet("/me/likes", GetLikedPosts)
-            .WithName("GetLikedPosts")
-            .WithSummary("Get the authenticated user's liked posts")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status401Unauthorized);
+            .MapGet("/{id:guid}/posts", GetPostsByUser)
+            .WithName("GetPostsByUser")
+            .WithSummary("Get a list of a users posts, newest first");
     }
 
     private static async Task<Results<Ok<CurrentUserResponseDto>, NotFound>> GetCurrentUser(
@@ -32,6 +31,23 @@ public static class UserEndpoints
     {
         var currentUser = await userService.GetMeAsync(user.GetUserId());
         return currentUser is null ? TypedResults.NotFound() : TypedResults.Ok(currentUser);
+    }
+
+    private static async Task<
+        Results<Ok<PostPageResponseDto>, NotFound, ValidationProblem>
+    > GetPostsByUser(
+        Guid id,
+        ClaimsPrincipal user,
+        IUserService userService,
+        IPostService postService
+    )
+    {
+        var author = await userService.GetByIdAsync(id);
+        if (author is null)
+            return TypedResults.NotFound();
+        Guid? currentUserId = user.Identity?.IsAuthenticated == true ? user.GetUserId() : null;
+        var result = await postService.GetByUserAsync(id, currentUserId);
+        return TypedResults.Ok(result);
     }
 
     private static async Task<Results<Ok<PostPageResponseDto>, ValidationProblem>> GetLikedPosts(
