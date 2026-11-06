@@ -92,4 +92,23 @@ public class PostService(AppDbContext db) : IPostService
             .ToListAsync();
         return new PostPageResponseDto(items, 1, false); //TODO: implement paging logic
     }
+
+    public async Task<(bool Found, bool Allowed, PostResponseDto? Post)> UpdateAsync(
+        Guid id,
+        Guid userId,
+        string content
+    )
+    {
+        var post = await db.Posts.FindAsync(id);
+        if (post is null)
+            return (false, false, null);
+        if (post.AuthorId != userId)
+            return (true, false, null);
+
+        post.Content = content;
+        post.UpdatedAtUtc = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        return (true, true, await GetByIdAsync(id, userId));
+    }
 }

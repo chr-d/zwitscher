@@ -18,4 +18,5 @@ export * from "./postResponseDto";
 export * from "./problemDetails";
 export * from "./refreshRequestDto";
 export * from "./registerRequestDto";
+export * from "./updatePostRequestDto";
 export * from "./userResponseDto";

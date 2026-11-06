@@ -13,4 +13,10 @@ public interface IPostService
     Task<PostPageResponseDto> GetByUserAsync(Guid authorId, Guid? userId);
 
     Task<PostPageResponseDto> GetLikedByUserAsync(Guid userId);
+
+    Task<(bool Found, bool Allowed, PostResponseDto? Post)> UpdateAsync(
+        Guid id,
+        Guid userId,
+        string content
+    );
 }
