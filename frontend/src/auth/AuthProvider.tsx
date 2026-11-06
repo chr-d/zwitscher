@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
 import {
-  getCurrentUser,
   getGetCurrentUserQueryKey,
   useGetCurrentUser,
 } from "@/api/generated/users/users";
@@ -13,17 +12,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   // Get the current user profile if there is a session
   const profile = useGetCurrentUser({
+    fetcher: auth.authFetch,
     query: {
       // Keep each session's profile separate in the cache
       queryKey: [...getGetCurrentUserQueryKey(), auth.sessionVersion],
       // Only load the profile when session tokens are available
       enabled: auth.hasSession,
-      // Disable React Query retries; auth.request handles token retries
+      // Disable React Query retries; authFetch handles token retries
       retry: false,
-      queryFn: ({ signal }) =>
-        // Route getCurrentUser query through auth.request() wrapper
-        // Adds the access token to the request, refreshing it if needed
-        auth.request((options) => getCurrentUser({ ...options, signal })),
     },
   });
 
@@ -44,7 +40,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         error,
         login: auth.login,
         logout: auth.logout,
-        request: auth.request,
+        authFetch: auth.authFetch,
       }}
     >
       {children}

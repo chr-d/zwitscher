@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using ZwitscherApi.Dtos.Auth;
 using ZwitscherApi.Dtos.Users;
+using ZwitscherApi.Extensions;
 using ZwitscherApi.Services;
 
 namespace ZwitscherApi.Endpoints;
@@ -20,8 +22,16 @@ public static class AuthEndpoints
             .WithName("Refresh")
             .WithSummary("Refresh an access token using a refresh token")
             .ProducesValidationProblem()
-            .Produces(StatusCodes.Status401Unauthorized);
-        ;
+            .Produces(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
+        auth.MapPost("/logout", Logout)
+            .RequireAuthorization()
+            .WithName("Logout")
+            .WithSummary("Revoke the current session's refresh tokens")
+            .ProducesValidationProblem()
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
     }
 
     private static async Task<Results<Created<UserResponseDto>, ValidationProblem>> Register(
@@ -50,6 +60,16 @@ public static class AuthEndpoints
     {
         var response = await authService.LoginAsync(dto);
         return response is null ? TypedResults.Unauthorized() : TypedResults.Ok(response);
+    }
+
+    private static async Task<Results<NoContent, ForbidHttpResult>> Logout(
+        LogoutRequestDto dto,
+        ClaimsPrincipal user,
+        IAuthService authService
+    )
+    {
+        var revoked = await authService.LogoutAsync(user.GetUserId(), dto);
+        return revoked ? TypedResults.NoContent() : TypedResults.Forbid();
     }
 
     private static async Task<Results<Ok<LoginResponseDto>, UnauthorizedHttpResult>> Refresh(

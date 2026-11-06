@@ -25,9 +25,12 @@ public static class PostEndpoints
     }
 
 
-    private static async Task<Ok<PostPageResponseDto>> GetPosts(IPostService postService)
+    private static async Task<Ok<PostPageResponseDto>> GetPosts(ClaimsPrincipal user, IPostService postService)
     {
-        var feed = await postService.GetFeedAsync();
+        Guid? currentUserId = user.Identity?.IsAuthenticated == true
+            ? user.GetUserId()
+            : null;
+        var feed = await postService.GetFeedAsync(currentUserId);
         return TypedResults.Ok(feed);
     }
 

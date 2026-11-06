@@ -7,7 +7,7 @@ namespace ZwitscherApi.Services;
 
 public class PostService(AppDbContext db) : IPostService
 {
-    public async Task<PostPageResponseDto> GetFeedAsync()
+    public async Task<PostPageResponseDto> GetFeedAsync(Guid? userId)
     {
         var items = await db
             .Posts.AsNoTracking()
@@ -18,9 +18,9 @@ public class PostService(AppDbContext db) : IPostService
                 new AuthorResponseDto(p.Author.Id, p.Author.UserName!, p.Author.DisplayName),
                 p.CreatedAtUtc,
                 p.UpdatedAtUtc,
-                false, // TODO:CanEdit logic
+                userId.HasValue && p.AuthorId == userId.Value,
                 p.Likes.Count,
-                false // TODO: LikedByMe logic
+                userId.HasValue && p.Likes.Any(l => l.UserId == userId.Value)
             ))
             .ToListAsync();
         return new PostPageResponseDto(items, 1, false); //TODO: implement paging logic
@@ -32,10 +32,10 @@ public class PostService(AppDbContext db) : IPostService
 
         db.Posts.Add(post);
         await db.SaveChangesAsync();
-        return await GetByIdAsync(post.Id);
+        return await GetByIdAsync(post.Id, authorId);
     }
 
-    public async Task<PostResponseDto?> GetByIdAsync(Guid id)
+    public async Task<PostResponseDto?> GetByIdAsync(Guid id, Guid? userId)
     {
 
         return await db
@@ -47,9 +47,9 @@ public class PostService(AppDbContext db) : IPostService
                 new AuthorResponseDto(p.Author.Id, p.Author.UserName!, p.Author.DisplayName),
                 p.CreatedAtUtc,
                 p.UpdatedAtUtc,
-                false, // TODO: CanEdit logic
+                userId.HasValue && p.AuthorId == userId.Value,
                 p.Likes.Count,
-                false // TODO: LikedByMe logic
+                userId.HasValue && p.Likes.Any(l => l.UserId == userId.Value)
             ))
             .FirstOrDefaultAsync();
     }

@@ -1,7 +1,13 @@
+import { Suspense, lazy } from "react";
 import { Outlet } from "react-router";
 
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
+
+// import daisyui theme devtool in development only
+const ThemeStudio = import.meta.env.DEV
+  ? lazy(() => import("@/dev/DaisyThemeStudio.tsx"))
+  : null;
 
 const MainLayout = () => {
   return (
@@ -13,6 +19,11 @@ const MainLayout = () => {
           <Outlet />
         </div>
       </main>
+      {ThemeStudio && (
+        <Suspense fallback={null}>
+          <ThemeStudio />
+        </Suspense>
+      )}
     </div>
   );
 };

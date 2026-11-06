@@ -16,6 +16,8 @@ import type {
   HttpValidationProblemDetails,
   LoginRequestDto,
   LoginResponseDto,
+  LogoutRequestDto,
+  ProblemDetails,
   RefreshRequestDto,
   RegisterRequestDto,
   UserResponseDto,
@@ -31,6 +33,7 @@ export const getRegisterUrl = () => {
 export const register = async (
   registerRequestDto: RegisterRequestDto,
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<UserResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
@@ -53,7 +56,7 @@ export const register = async (
     }
     return headers;
   };
-  const res = await fetch(getRegisterUrl(), {
+  const res = await (fetchFn ?? fetch)(getRegisterUrl(), {
     ...options,
     method: "POST",
     headers: {
@@ -92,6 +95,7 @@ export const getRegisterMutationOptions = <
     TContext
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof register>>,
   TError,
@@ -99,7 +103,11 @@ export const getRegisterMutationOptions = <
   TContext
 > => {
   const mutationKey = getRegisterMutationKey();
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
@@ -113,7 +121,7 @@ export const getRegisterMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return register(data, fetchOptions);
+    return register(data, fetchOptions, fetcherFn);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -147,6 +155,7 @@ export const useRegister = <
       TContext
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -167,6 +176,7 @@ export const getLoginUrl = () => {
 export const login = async (
   loginRequestDto: LoginRequestDto,
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<LoginResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
@@ -189,7 +199,7 @@ export const login = async (
     }
     return headers;
   };
-  const res = await fetch(getLoginUrl(), {
+  const res = await (fetchFn ?? fetch)(getLoginUrl(), {
     ...options,
     method: "POST",
     headers: {
@@ -228,6 +238,7 @@ export const getLoginMutationOptions = <
     TContext
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof login>>,
   TError,
@@ -235,7 +246,11 @@ export const getLoginMutationOptions = <
   TContext
 > => {
   const mutationKey = getLoginMutationKey();
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
@@ -249,7 +264,7 @@ export const getLoginMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return login(data, fetchOptions);
+    return login(data, fetchOptions, fetcherFn);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -283,6 +298,7 @@ export const useLogin = <
       TContext
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -303,6 +319,7 @@ export const getRefreshUrl = () => {
 export const refresh = async (
   refreshRequestDto: RefreshRequestDto,
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<LoginResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
@@ -325,7 +342,7 @@ export const refresh = async (
     }
     return headers;
   };
-  const res = await fetch(getRefreshUrl(), {
+  const res = await (fetchFn ?? fetch)(getRefreshUrl(), {
     ...options,
     method: "POST",
     headers: {
@@ -352,7 +369,7 @@ export const getRefreshMutationKey = () => ["refresh"] as const;
 
 export const getRefreshMutationOptions = <
   TError = globalThis.Error & {
-    info?: HttpValidationProblemDetails | void;
+    info?: HttpValidationProblemDetails | void | ProblemDetails;
     status?: number;
   },
   TContext = unknown,
@@ -364,6 +381,7 @@ export const getRefreshMutationOptions = <
     TContext
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof refresh>>,
   TError,
@@ -371,7 +389,11 @@ export const getRefreshMutationOptions = <
   TContext
 > => {
   const mutationKey = getRefreshMutationKey();
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
@@ -385,7 +407,7 @@ export const getRefreshMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return refresh(data, fetchOptions);
+    return refresh(data, fetchOptions, fetcherFn);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -396,7 +418,7 @@ export type RefreshMutationResult = NonNullable<
 >;
 export type RefreshMutationBody = RefreshRequestDto;
 export type RefreshMutationError = globalThis.Error & {
-  info?: HttpValidationProblemDetails | void;
+  info?: HttpValidationProblemDetails | void | ProblemDetails;
   status?: number;
 };
 export type RefreshMutationVariables = { data: RefreshRequestDto };
@@ -406,7 +428,7 @@ export type RefreshMutationVariables = { data: RefreshRequestDto };
  */
 export const useRefresh = <
   TError = globalThis.Error & {
-    info?: HttpValidationProblemDetails | void;
+    info?: HttpValidationProblemDetails | void | ProblemDetails;
     status?: number;
   },
   TContext = unknown,
@@ -419,6 +441,7 @@ export const useRefresh = <
       TContext
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -428,4 +451,147 @@ export const useRefresh = <
   TContext
 > => {
   return useMutation(getRefreshMutationOptions(options), queryClient);
+};
+export const getLogoutUrl = () => {
+  return `${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`;
+};
+
+/**
+ * @summary Revoke the current session's refresh tokens
+ */
+export const logout = async (
+  logoutRequestDto: LogoutRequestDto,
+  options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
+): Promise<void> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(
+          h as Iterable<Iterable<string>>,
+          (entry) => Array.from(entry) as [string, string],
+        ),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<
+      string | readonly string[] | undefined
+    >(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  const res = await (fetchFn ?? fetch)(getLogoutUrl(), {
+    ...options,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getHeaders(options?.headers),
+    },
+    body: JSON.stringify(logoutRequestDto),
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: void; status?: number } =
+      new globalThis.Error();
+    const data: void = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: void = body ? JSON.parse(body) : undefined;
+  return data;
+};
+
+export const getLogoutMutationKey = () => ["logout"] as const;
+
+export const getLogoutMutationOptions = <
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void | ProblemDetails;
+    status?: number;
+  },
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof logout>>,
+    TError,
+    LogoutMutationVariables,
+    TContext
+  >;
+  fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof logout>>,
+  TError,
+  LogoutMutationVariables,
+  TContext
+> => {
+  const mutationKey = getLogoutMutationKey();
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof logout>>,
+    LogoutMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return logout(data, fetchOptions, fetcherFn);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type LogoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof logout>>
+>;
+export type LogoutMutationBody = LogoutRequestDto;
+export type LogoutMutationError = globalThis.Error & {
+  info?: HttpValidationProblemDetails | void | ProblemDetails;
+  status?: number;
+};
+export type LogoutMutationVariables = { data: LogoutRequestDto };
+
+/**
+ * @summary Revoke the current session's refresh tokens
+ */
+export const useLogout = <
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void | ProblemDetails;
+    status?: number;
+  },
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof logout>>,
+      TError,
+      LogoutMutationVariables,
+      TContext
+    >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof logout>>,
+  TError,
+  LogoutMutationVariables,
+  TContext
+> => {
+  return useMutation(getLogoutMutationOptions(options), queryClient);
 };

@@ -53,8 +53,9 @@ export const getGetPostsUrl = () => {
  */
 export const getPosts = async (
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<PostPageResponseDto> => {
-  const res = await fetch(getGetPostsUrl(), {
+  const res = await (fetchFn ?? fetch)(getGetPostsUrl(), {
     ...options,
     method: "GET",
   });
@@ -84,14 +85,19 @@ export const getGetPostsQueryOptions = <
     UseQueryOptions<Awaited<ReturnType<typeof getPosts>>, TError, TData>
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const {
+    query: queryOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getGetPostsQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getPosts>>> = ({
     signal,
-  }) => getPosts({ signal, ...fetchOptions });
+  }) => getPosts({ signal, ...fetchOptions }, fetcherFn);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getPosts>>,
@@ -125,6 +131,7 @@ export function useGetPosts<
         "initialData"
       >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -147,6 +154,7 @@ export function useGetPosts<
         "initialData"
       >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -161,6 +169,7 @@ export function useGetPosts<
       UseQueryOptions<Awaited<ReturnType<typeof getPosts>>, TError, TData>
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -179,6 +188,7 @@ export function useGetPosts<
       UseQueryOptions<Awaited<ReturnType<typeof getPosts>>, TError, TData>
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -204,6 +214,7 @@ export const getCreatePostUrl = () => {
 export const createPost = async (
   createPostRequestDto: CreatePostRequestDto,
   options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
 ): Promise<PostResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
@@ -226,7 +237,7 @@ export const createPost = async (
     }
     return headers;
   };
-  const res = await fetch(getCreatePostUrl(), {
+  const res = await (fetchFn ?? fetch)(getCreatePostUrl(), {
     ...options,
     method: "POST",
     headers: {
@@ -262,6 +273,7 @@ export const getCreatePostMutationOptions = <
     TContext
   >;
   fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createPost>>,
   TError,
@@ -269,7 +281,11 @@ export const getCreatePostMutationOptions = <
   TContext
 > => {
   const mutationKey = getCreatePostMutationKey();
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
@@ -283,7 +299,7 @@ export const getCreatePostMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return createPost(data, fetchOptions);
+    return createPost(data, fetchOptions, fetcherFn);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -314,6 +330,7 @@ export const useCreatePost = <
       TContext
     >;
     fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
