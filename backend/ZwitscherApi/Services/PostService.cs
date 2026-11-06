@@ -37,7 +37,6 @@ public class PostService(AppDbContext db) : IPostService
 
     public async Task<PostResponseDto?> GetByIdAsync(Guid id, Guid? userId)
     {
-
         return await db
             .Posts.AsNoTracking()
             .Where(p => p.Id == id)
@@ -54,4 +53,23 @@ public class PostService(AppDbContext db) : IPostService
             .FirstOrDefaultAsync();
     }
 
+    public async Task<PostPageResponseDto> GetLikedByUserAsync(Guid userId)
+    {
+        var items = await db
+            .Posts.AsNoTracking()
+            .Where(p => p.Likes.Any(l => l.UserId == userId))
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .Select(p => new PostResponseDto(
+                p.Id,
+                p.Content,
+                new AuthorResponseDto(p.Author.Id, p.Author.UserName!, p.Author.DisplayName),
+                p.CreatedAtUtc,
+                p.UpdatedAtUtc,
+                p.AuthorId == userId,
+                p.Likes.Count,
+                p.Likes.Any(l => l.UserId == userId)
+            ))
+            .ToListAsync();
+        return new PostPageResponseDto(items, 1, false); //TODO: implement paging logic
+    }
 }
