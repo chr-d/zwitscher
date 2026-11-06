@@ -9,4 +9,6 @@ public interface IPostService
     Task<PostResponseDto?> CreateAsync(Guid authorId, CreatePostRequestDto content);
 
     Task<PostResponseDto?> GetByIdAsync(Guid id, Guid? userId);
+
+    Task<PostPageResponseDto> GetByUserAsync(Guid authorId, Guid? userId);
 }
