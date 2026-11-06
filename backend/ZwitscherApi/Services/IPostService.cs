@@ -9,4 +9,10 @@ public interface IPostService
     Task<PostResponseDto?> CreateAsync(Guid authorId, CreatePostRequestDto content);
 
     Task<PostResponseDto?> GetByIdAsync(Guid id, Guid? userId);
+
+    Task<(bool Found, bool Allowed, PostResponseDto? Post)> UpdateAsync(
+        Guid id,
+        Guid userId,
+        string content
+    );
 }
