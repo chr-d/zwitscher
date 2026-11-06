@@ -1,13 +1,12 @@
 using ZwitscherApi.Dtos.Posts;
-using ZwitscherApi.Models;
 
 namespace ZwitscherApi.Services;
 
 public interface IPostService
 {
-    Task<PostPageResponseDto> GetFeedAsync();
+    Task<PostPageResponseDto> GetFeedAsync(Guid? userId);
 
     Task<PostResponseDto?> CreateAsync(Guid authorId, CreatePostRequestDto content);
 
-    Task<PostResponseDto?> GetByIdAsync(Guid Id); //add current UserId
+    Task<PostResponseDto?> GetByIdAsync(Guid id, Guid? userId);
 }

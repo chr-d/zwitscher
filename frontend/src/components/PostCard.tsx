@@ -1,4 +1,7 @@
-const PostCard = ({ post }) => {
+import type { PostResponseDto } from "@/api/generated/models";
+import LikeButton from "@/components/LikeButton";
+
+const PostCard = ({ post }: { post: PostResponseDto }) => {
   // const {id, } = post;
   const Post = post;
 
@@ -32,11 +35,9 @@ const PostCard = ({ post }) => {
         id="likes"
         className="card-actions px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
       >
-        <p className="flex cursor-pointer items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
-          <span aria-hidden="true" className="text-xl max-[500px]:text-lg">
-            ❤️
-          </span>
-          <span aria-label="12 Likes">12</span>
+        <p className="flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
+          <LikeButton postId={post.id} isLiked={post.likedByMe} />
+          <span aria-label={`${post.likeCount} Likes`}>{post.likeCount}</span>
         </p>
       </div>
     </div>
