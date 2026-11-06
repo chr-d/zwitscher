@@ -37,7 +37,6 @@ public class PostService(AppDbContext db) : IPostService
 
     public async Task<PostResponseDto?> GetByIdAsync(Guid id, Guid? userId)
     {
-
         return await db
             .Posts.AsNoTracking()
             .Where(p => p.Id == id)
@@ -54,4 +53,62 @@ public class PostService(AppDbContext db) : IPostService
             .FirstOrDefaultAsync();
     }
 
+    public async Task<PostPageResponseDto> GetByUserAsync(Guid authorId, Guid? userId)
+    {
+        var items = await db
+            .Posts.AsNoTracking()
+            .Where(p => p.AuthorId == authorId)
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .Select(p => new PostResponseDto(
+                p.Id,
+                p.Content,
+                new AuthorResponseDto(p.Author.Id, p.Author.UserName!, p.Author.DisplayName),
+                p.CreatedAtUtc,
+                p.UpdatedAtUtc,
+                userId.HasValue && p.AuthorId == userId.Value,
+                p.Likes.Count,
+                userId.HasValue && p.Likes.Any(l => l.UserId == userId.Value)
+            ))
+            .ToListAsync();
+        return new PostPageResponseDto(items, 1, false); //TODO: implement paging logic
+    }
+
+    public async Task<PostPageResponseDto> GetLikedByUserAsync(Guid userId)
+    {
+        var items = await db
+            .Posts.AsNoTracking()
+            .Where(p => p.Likes.Any(l => l.UserId == userId))
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .Select(p => new PostResponseDto(
+                p.Id,
+                p.Content,
+                new AuthorResponseDto(p.Author.Id, p.Author.UserName!, p.Author.DisplayName),
+                p.CreatedAtUtc,
+                p.UpdatedAtUtc,
+                p.AuthorId == userId,
+                p.Likes.Count,
+                p.Likes.Any(l => l.UserId == userId)
+            ))
+            .ToListAsync();
+        return new PostPageResponseDto(items, 1, false); //TODO: implement paging logic
+    }
+
+    public async Task<(bool Found, bool Allowed, PostResponseDto? Post)> UpdateAsync(
+        Guid id,
+        Guid userId,
+        string content
+    )
+    {
+        var post = await db.Posts.FindAsync(id);
+        if (post is null)
+            return (false, false, null);
+        if (post.AuthorId != userId)
+            return (true, false, null);
+
+        post.Content = content;
+        post.UpdatedAtUtc = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        return (true, true, await GetByIdAsync(id, userId));
+    }
 }

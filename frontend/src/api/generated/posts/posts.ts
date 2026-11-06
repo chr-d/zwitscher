@@ -22,8 +22,10 @@ import type {
 
 import type {
   CreatePostRequestDto,
+  HttpValidationProblemDetails,
   PostPageResponseDto,
   PostResponseDto,
+  UpdatePostRequestDto,
 } from "../models";
 
 const withQueryKey = <T extends object, K>(
@@ -340,4 +342,151 @@ export const useCreatePost = <
   TContext
 > => {
   return useMutation(getCreatePostMutationOptions(options), queryClient);
+};
+export const getUpdatePostUrl = (id: string) => {
+  return `${import.meta.env.VITE_API_BASE_URL}/api/posts/${id}`;
+};
+
+/**
+ * @summary Update a post
+ */
+export const updatePost = async (
+  id: string,
+  updatePostRequestDto: UpdatePostRequestDto,
+  options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
+): Promise<PostResponseDto> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(
+          h as Iterable<Iterable<string>>,
+          (entry) => Array.from(entry) as [string, string],
+        ),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<
+      string | readonly string[] | undefined
+    >(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  const res = await (fetchFn ?? fetch)(getUpdatePostUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getHeaders(options?.headers),
+    },
+    body: JSON.stringify(updatePostRequestDto),
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & { info?: PostResponseDto; status?: number } =
+      new globalThis.Error();
+    const data: PostResponseDto = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: PostResponseDto = body ? JSON.parse(body) : {};
+  return data;
+};
+
+export const getUpdatePostMutationKey = () => ["updatePost"] as const;
+
+export const getUpdatePostMutationOptions = <
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePost>>,
+    TError,
+    UpdatePostMutationVariables,
+    TContext
+  >;
+  fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updatePost>>,
+  TError,
+  UpdatePostMutationVariables,
+  TContext
+> => {
+  const mutationKey = getUpdatePostMutationKey();
+  const {
+    mutation: mutationOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updatePost>>,
+    UpdatePostMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updatePost(id, data, fetchOptions, fetcherFn);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdatePostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updatePost>>
+>;
+export type UpdatePostMutationBody = UpdatePostRequestDto;
+export type UpdatePostMutationError = globalThis.Error & {
+  info?: HttpValidationProblemDetails | void;
+  status?: number;
+};
+export type UpdatePostMutationVariables = {
+  id: string;
+  data: UpdatePostRequestDto;
+};
+
+/**
+ * @summary Update a post
+ */
+export const useUpdatePost = <
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updatePost>>,
+      TError,
+      UpdatePostMutationVariables,
+      TContext
+    >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof updatePost>>,
+  TError,
+  UpdatePostMutationVariables,
+  TContext
+> => {
+  return useMutation(getUpdatePostMutationOptions(options), queryClient);
 };
