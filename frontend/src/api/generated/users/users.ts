@@ -17,7 +17,11 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { CurrentUserResponseDto } from "../models";
+import type {
+  CurrentUserResponseDto,
+  HttpValidationProblemDetails,
+  PostPageResponseDto,
+} from "../models";
 
 const withQueryKey = <T extends object, K>(
   query: T,
@@ -190,6 +194,198 @@ export function useGetCurrentUser<
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetCurrentUserQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getGetPostsByUserUrl = (id: string) => {
+  return `${import.meta.env.VITE_API_BASE_URL}/api/users/${id}/posts`;
+};
+
+/**
+ * @summary Get a list of a users posts, newest first
+ */
+export const getPostsByUser = async (
+  id: string,
+  options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
+): Promise<PostPageResponseDto> => {
+  const res = await (fetchFn ?? fetch)(getGetPostsByUserUrl(id), {
+    ...options,
+    method: "GET",
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & {
+      info?: PostPageResponseDto;
+      status?: number;
+    } = new globalThis.Error();
+    const data: PostPageResponseDto = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: PostPageResponseDto = body ? JSON.parse(body) : {};
+  return data;
+};
+
+export const getGetPostsByUserQueryKey = (id: string) => {
+  return [
+    `${import.meta.env.VITE_API_BASE_URL}/api/users/${id}/posts`,
+  ] as const;
+};
+
+export const getGetPostsByUserQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsByUser>>, TError, TData>
+    >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+) => {
+  const {
+    query: queryOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPostsByUserQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsByUser>>> = ({
+    signal,
+  }) => getPostsByUser(id, { signal, ...fetchOptions }, fetcherFn);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPostsByUser>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetPostsByUserQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPostsByUser>>
+>;
+export type GetPostsByUserQueryError = globalThis.Error & {
+  info?: HttpValidationProblemDetails | void;
+  status?: number;
+};
+
+export function useGetPostsByUser<
+  TData = Awaited<ReturnType<typeof getPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsByUser>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPostsByUser>>,
+          TError,
+          Awaited<ReturnType<typeof getPostsByUser>>
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPostsByUser<
+  TData = Awaited<ReturnType<typeof getPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsByUser>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPostsByUser>>,
+          TError,
+          Awaited<ReturnType<typeof getPostsByUser>>
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPostsByUser<
+  TData = Awaited<ReturnType<typeof getPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsByUser>>, TError, TData>
+    >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get a list of a users posts, newest first
+ */
+
+export function useGetPostsByUser<
+  TData = Awaited<ReturnType<typeof getPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails | void;
+    status?: number;
+  },
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsByUser>>, TError, TData>
+    >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetPostsByUserQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
