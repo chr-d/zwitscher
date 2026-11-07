@@ -2,11 +2,17 @@
 import { useState } from "react";
 import { Plus, X } from "reicon-react";
 
+import { useCreatePost } from "@/api/generated/posts/posts";
 import { useAuth } from "@/auth/AuthContext";
 
 const CreatePost = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { hasSession, user } = useAuth();
+  const [content, setContent] = useState("");
+  const { hasSession, user, authFetch } = useAuth();
+
+  const { mutate: createPost } = useCreatePost({
+    fetcher: authFetch,
+  });
 
   if (!isOpen && hasSession) {
     return (
@@ -58,9 +64,20 @@ const CreatePost = () => {
             id="createPostBody"
             className="flex-1 px-8 pt-3 pb-6 max-[500px]:px-4 max-[500px]:pt-2 max-[500px]:pb-4"
           >
-            <form action=""></form>
+            <textarea
+              name="content"
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              placeholder="Here goes your content, use 2 - 300 characters"
+              maxLength={300}
+              required
+              className="min-h-[160px] w-full flex-1 rounded-[6px] border border-primary/30 bg-transparent p-3 text-base-content transition-colors placeholder:text-base-content/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none max-[500px]:min-h-[100px]"
+            ></textarea>
           </div>
-          <button className="btn m-4 mx-auto w-16 rounded-[6px] border-0 bg-secondary px-6 font-bold text-primary-content transition duration-200 hover:brightness-110">
+          <button
+            onClick={() => createPost({ data: { content } })}
+            className="btn m-4 mx-auto w-16 rounded-[6px] border-0 bg-secondary px-6 font-bold text-primary-content transition duration-200 hover:brightness-110"
+          >
             Submit
           </button>
         </div>
