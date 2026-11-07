@@ -394,3 +394,201 @@ export function useGetPostsByUser<
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+export const getGetLikedPostsByUserUrl = () => {
+  return `${import.meta.env.VITE_API_BASE_URL}/api/users/likedposts`;
+};
+
+/**
+ * @summary Get a list of a users liked posts, newest first
+ */
+export const getLikedPostsByUser = async (
+  options?: RequestInit,
+  fetchFn?: typeof globalThis.fetch,
+): Promise<PostPageResponseDto> => {
+  const res = await (fetchFn ?? fetch)(getGetLikedPostsByUserUrl(), {
+    ...options,
+    method: "GET",
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+    const err: globalThis.Error & {
+      info?: PostPageResponseDto;
+      status?: number;
+    } = new globalThis.Error();
+    const data: PostPageResponseDto = body ? JSON.parse(body) : {};
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: PostPageResponseDto = body ? JSON.parse(body) : {};
+  return data;
+};
+
+export const getGetLikedPostsByUserQueryKey = () => {
+  return [`${import.meta.env.VITE_API_BASE_URL}/api/users/likedposts`] as const;
+};
+
+export const getGetLikedPostsByUserQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLikedPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails;
+    status?: number;
+  },
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getLikedPostsByUser>>,
+      TError,
+      TData
+    >
+  >;
+  fetch?: RequestInit;
+  fetcher?: typeof globalThis.fetch;
+}) => {
+  const {
+    query: queryOptions,
+    fetch: fetchOptions,
+    fetcher: fetcherFn,
+  } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetLikedPostsByUserQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLikedPostsByUser>>
+  > = ({ signal }) =>
+    getLikedPostsByUser({ signal, ...fetchOptions }, fetcherFn);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLikedPostsByUser>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetLikedPostsByUserQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLikedPostsByUser>>
+>;
+export type GetLikedPostsByUserQueryError = globalThis.Error & {
+  info?: HttpValidationProblemDetails;
+  status?: number;
+};
+
+export function useGetLikedPostsByUser<
+  TData = Awaited<ReturnType<typeof getLikedPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails;
+    status?: number;
+  },
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getLikedPostsByUser>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getLikedPostsByUser>>,
+          TError,
+          Awaited<ReturnType<typeof getLikedPostsByUser>>
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetLikedPostsByUser<
+  TData = Awaited<ReturnType<typeof getLikedPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails;
+    status?: number;
+  },
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getLikedPostsByUser>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getLikedPostsByUser>>,
+          TError,
+          Awaited<ReturnType<typeof getLikedPostsByUser>>
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetLikedPostsByUser<
+  TData = Awaited<ReturnType<typeof getLikedPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails;
+    status?: number;
+  },
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getLikedPostsByUser>>,
+        TError,
+        TData
+      >
+    >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get a list of a users liked posts, newest first
+ */
+
+export function useGetLikedPostsByUser<
+  TData = Awaited<ReturnType<typeof getLikedPostsByUser>>,
+  TError = globalThis.Error & {
+    info?: HttpValidationProblemDetails;
+    status?: number;
+  },
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getLikedPostsByUser>>,
+        TError,
+        TData
+      >
+    >;
+    fetch?: RequestInit;
+    fetcher?: typeof globalThis.fetch;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetLikedPostsByUserQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
