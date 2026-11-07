@@ -770,7 +770,7 @@ export default function DaisyThemeStudio({ themes }: DaisyThemeStudioProps) {
   const [selected, setSelected] = useState("primary");
   const [mode, setMode] = useState("palette");
   const [page, setPage] = useState("colors");
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [exportName, setExportName] = useState("mytheme");
   const [copied, setCopied] = useState(false);
   const codeRef = useRef<HTMLTextAreaElement>(null);
