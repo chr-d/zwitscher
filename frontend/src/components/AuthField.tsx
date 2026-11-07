@@ -32,8 +32,11 @@ export default function AuthField({
         </p>
       )}
       {errors && (
-        <p id={`${name}-error`} className="text-sm text-error-content">
-          {errors.join(" ")}
+        <p
+          id={`${name}-error`}
+          className="text-sm whitespace-pre-line text-error-content"
+        >
+          {errors.join("\n")}
         </p>
       )}
     </div>
