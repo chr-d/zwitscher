@@ -9,10 +9,18 @@ const Home = () => {
     fetcher: hasSession ? authFetch : fetch,
   });
   if (isLoading) {
-    return <main>Loading...</main>;
+    return (
+      <main>
+        <p className="m-16 font-bold">Loading...</p>
+      </main>
+    );
   }
   if (isError) {
-    return <main>Error loading posts</main>;
+    return (
+      <main className="flex h-full w-full flex-1 flex-col items-center overflow-y-auto bg-neutral">
+        <p className="m-16 font-bold text-accent">Error loading posts</p>
+      </main>
+    );
   }
   return (
     <main className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-neutral">
