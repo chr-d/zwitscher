@@ -77,27 +77,37 @@ const CreatePost = () => {
               <X />
             </button>
           </div>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
 
-          <div
-            id="createPostBody"
-            className="flex-1 px-8 pt-3 pb-6 max-[500px]:px-4 max-[500px]:pt-2 max-[500px]:pb-4"
+              const text = content.trim();
+              if (text.length < 2 || text.length > 300) return;
+
+              createPost({ data: { content: text } });
+            }}
           >
-            <textarea
-              name="content"
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              placeholder="Here goes your content, use 2 - 300 characters"
-              maxLength={300}
-              required
-              className="min-h-[160px] w-full flex-1 rounded-[6px] border border-primary/30 bg-transparent p-3 text-base-content transition-colors placeholder:text-base-content/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none max-[500px]:min-h-[100px]"
-            ></textarea>
-          </div>
-          <button
-            onClick={() => createPost({ data: { content } })}
-            className="btn m-4 mx-auto w-16 rounded-[6px] border-0 bg-secondary px-6 font-bold text-primary-content transition duration-200 hover:brightness-110"
-          >
-            {isPending ? "Sendet…" : "Submit"}
-          </button>
+            <div
+              id="createPostBody"
+              className="flex-1 px-8 pt-3 pb-6 max-[500px]:px-4 max-[500px]:pt-2 max-[500px]:pb-4"
+            >
+              <textarea
+                name="content"
+                value={content}
+                onChange={(event) => setContent(event.target.value)}
+                placeholder="Here goes your content, use 2 - 300 characters"
+                maxLength={300}
+                required
+                className="min-h-[160px] w-full flex-1 rounded-[6px] border border-primary/30 bg-transparent p-3 text-base-content transition-colors placeholder:text-base-content/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none max-[500px]:min-h-[100px]"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              className="btn mx-auto my-4 flex w-16 rounded-[6px] border-0 bg-secondary px-6 font-bold text-primary-content transition duration-200 hover:brightness-110"
+            >
+              {isPending ? "Sendet…" : "Submit"}
+            </button>
+          </form>
           {isError && (
             <p role="alert" className="px-4 pb-4 text-center text-error">
               Der Beitrag konnte nicht erstellt werden. Bitte erneut versuchen.
