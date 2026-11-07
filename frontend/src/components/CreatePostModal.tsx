@@ -2,7 +2,11 @@
 import { useState } from "react";
 import { Plus, X } from "reicon-react";
 
-import { useCreatePost } from "@/api/generated/posts/posts";
+import {
+  getGetPostsQueryKey,
+  useCreatePost,
+} from "@/api/generated/posts/posts";
+import { queryClient } from "@/api/queryClient";
 import { useAuth } from "@/auth/AuthContext";
 
 const CreatePost = () => {
@@ -17,8 +21,13 @@ const CreatePost = () => {
   } = useCreatePost({
     fetcher: authFetch,
     mutation: {
-      onSuccess: () => {
-        window.location.assign("/");
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: getGetPostsQueryKey(),
+        });
+
+        setContent("");
+        setIsOpen(false);
       },
     },
   });
