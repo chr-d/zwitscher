@@ -22,6 +22,11 @@ public static class UserEndpoints
             .MapGet("/{id:guid}/posts", GetPostsByUser)
             .WithName("GetPostsByUser")
             .WithSummary("Get a list of a users posts, newest first");
+        users
+            .MapGet("/likedposts", GetLikedPosts)
+            .WithName("GetLikedPostsByUser")
+            .WithSummary("Get a list of a users liked posts, newest first")
+            .RequireAuthorization();
     }
 
     private static async Task<Results<Ok<CurrentUserResponseDto>, NotFound>> GetCurrentUser(
