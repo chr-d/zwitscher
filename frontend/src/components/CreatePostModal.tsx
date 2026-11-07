@@ -10,8 +10,17 @@ const CreatePost = () => {
   const [content, setContent] = useState("");
   const { hasSession, user, authFetch } = useAuth();
 
-  const { mutate: createPost } = useCreatePost({
+  const {
+    mutate: createPost,
+    isError,
+    isPending,
+  } = useCreatePost({
     fetcher: authFetch,
+    mutation: {
+      onSuccess: () => {
+        window.location.assign("/");
+      },
+    },
   });
 
   if (!isOpen && hasSession) {
@@ -78,8 +87,13 @@ const CreatePost = () => {
             onClick={() => createPost({ data: { content } })}
             className="btn m-4 mx-auto w-16 rounded-[6px] border-0 bg-secondary px-6 font-bold text-primary-content transition duration-200 hover:brightness-110"
           >
-            Submit
+            {isPending ? "Sendet…" : "Submit"}
           </button>
+          {isError && (
+            <p role="alert" className="px-4 pb-4 text-center text-error">
+              Der Beitrag konnte nicht erstellt werden. Bitte erneut versuchen.
+            </p>
+          )}
         </div>
       </dialog>
     );
