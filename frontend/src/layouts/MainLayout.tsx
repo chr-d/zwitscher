@@ -15,7 +15,7 @@ const MainLayout = () => {
       <Header />
       <main className="flex min-h-0 flex-1 flex-col-reverse min-[501px]:flex-row">
         <Navbar />
-        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
+        <div className="size-full flex-1 overflow-y-auto bg-neutral">
           <Outlet />
         </div>
       </main>
