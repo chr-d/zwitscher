@@ -4,6 +4,7 @@ import { Edit } from "reicon-react";
 
 import type { PostResponseDto } from "@/api/generated/models";
 import { useAuth } from "@/auth/AuthContext";
+import DeleteButton from "@/components/DeleteButton";
 import EditPostModal from "@/components/EditPostModal";
 import LikeButton from "@/components/LikeButton";
 
@@ -76,6 +77,7 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
             <Edit />
           </button>
         )}
+        {canEdit && <DeleteButton postId={post.id} />}
       </div>
       {canEdit && isEditing && (
         <EditPostModal post={post} onClose={() => setIsEditing(false)} />
