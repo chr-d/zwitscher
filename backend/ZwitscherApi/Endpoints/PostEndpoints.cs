@@ -25,6 +25,11 @@ public static class PostEndpoints
             .WithName("UpdatePost")
             .WithSummary("Update a post")
             .RequireAuthorization();
+        posts
+            .MapDelete("/{id:guid}/delete", DeletePost)
+            .WithName("DeletePost")
+            .WithSummary("Delete a post")
+            .RequireAuthorization();
     }
 
     private static async Task<Ok<PostPageResponseDto>> GetPosts(
@@ -50,6 +55,21 @@ public static class PostEndpoints
             return TypedResults.Unauthorized();
         }
         return TypedResults.Created($"/api/posts/{post.Id}", post);
+    }
+
+    private static async Task<Results<NoContent, UnauthorizedHttpResult>> DeletePost(
+    Guid id,
+    ClaimsPrincipal user,
+    IPostService postService
+)
+    {
+        Guid userId = user.GetUserId();
+        var post = await postService.DeleteAsync(id, userId);
+        if (post)
+        {
+            return TypedResults.NoContent();
+        }
+        return TypedResults.Unauthorized();
     }
 
     private static async Task<
