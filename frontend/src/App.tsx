@@ -3,7 +3,9 @@ import { Route, Routes } from "react-router";
 import MainLayout from "@/layouts/MainLayout";
 import AuthTest from "@/routes/AuthTest";
 import Home from "@/routes/Home";
+import LikedByMe from "@/routes/LikedByMe";
 import Login from "@/routes/Login";
+import MyPosts from "@/routes/MyPosts";
 import Register from "@/routes/Register";
 
 function App() {
@@ -14,6 +16,8 @@ function App() {
         <Route path="auth-test" element={<AuthTest />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="myposts" element={<MyPosts />} />
+        <Route path="likes" element={<LikedByMe />} />
       </Route>
     </Routes>
   );

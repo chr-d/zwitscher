@@ -1,19 +1,26 @@
+import { useLocation } from "react-router";
+import { Edit } from "reicon-react";
+
 import type { PostResponseDto } from "@/api/generated/models";
 import LikeButton from "@/components/LikeButton";
 
 const PostCard = ({ post }: { post: PostResponseDto }) => {
   // const {id, } = post;
   const Post = post;
+  const { pathname } = useLocation();
 
   return (
-    <div className="card m-[16px] min-h-[330px] w-[calc(100%_-_24px)] max-w-[600px] overflow-hidden rounded-[30px] border-[3px] border-[#83C1EC] bg-[#D4D4D4] text-[#151515] max-[500px]:min-h-[250px] max-[500px]:rounded-[22px] max-[500px]:border-2">
+    <div
+      id={post.id}
+      className="card m-[16px] w-[calc(100%_-_24px)] max-w-[600px] overflow-hidden rounded-[6px] bg-primary-content text-base-100 shadow-[0_4px_18px_rgba(90,169,230,0.25)] transition-transform duration-200 motion-safe:hover:-translate-y-0.5"
+    >
       <div
         id="postHead"
-        className="shrink-0 border-b border-[#5AA9E6] bg-[#83C1EC] px-6 py-4 max-[500px]:px-4 max-[500px]:py-3"
+        className="shrink-0 border-b border-[#5AA9E6] bg-linear-to-r from-primary to-secondary px-6 py-3 max-[500px]:px-4 max-[500px]:py-2"
       >
         <h2
           id="displayName"
-          className="card-title block text-[40px] leading-tight font-black [overflow-wrap:anywhere] text-[#D4D4D4] max-[500px]:text-[28px]"
+          className="card-title block text-[24px] leading-tight font-black [overflow-wrap:anywhere] text-primary-content max-[500px]:text-[24px]"
         >
           {Post.author.displayName}
         </h2>
@@ -25,7 +32,7 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
       >
         <p
           id="postContent"
-          className="text-base leading-relaxed font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap max-[500px]:text-sm"
+          className="leading-relaxed font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap text-base-content max-[500px]:text-sm"
         >
           {Post.content}
         </p>
@@ -37,8 +44,18 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
       >
         <p className="flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
           <LikeButton postId={post.id} isLiked={post.likedByMe} />
-          <span aria-label={`${post.likeCount} Likes`}>{post.likeCount}</span>
+          <span
+            aria-label={`${post.likeCount} Likes`}
+            className="text-base-content"
+          >
+            {post.likeCount}
+          </span>
         </p>
+        {pathname === "/myposts" && (
+          <p className="ml-12 flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
+            <Edit color="black" />
+          </p>
+        )}
       </div>
     </div>
   );
