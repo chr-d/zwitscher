@@ -1,11 +1,13 @@
+import { type QueryKey, useQueryClient } from "@tanstack/react-query";
 import { Heart } from "reicon-react";
 
 import {
+  getGetLikedPostsQueryKey,
+  getGetPostsByUserQueryKey,
   getGetPostsQueryKey,
   useLikePost,
   useUnlikePost,
 } from "@/api/generated";
-import { queryClient } from "@/api/queryClient";
 import { useAuth } from "@/auth/AuthContext";
 
 const LikeButton = ({
@@ -15,27 +17,34 @@ const LikeButton = ({
   postId: string;
   isLiked: boolean;
 }) => {
-  const { authFetch } = useAuth();
+  const { authFetch, user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const refreshPosts = async () => {
+    const queryKeys: QueryKey[] = [
+      getGetPostsQueryKey(),
+      getGetLikedPostsQueryKey(),
+    ];
+    if (user) {
+      queryKeys.push(getGetPostsByUserQueryKey(user.id));
+    }
+
+    await Promise.all(
+      queryKeys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+    );
+  };
 
   const { mutate: likePost, isPending: isLiking } = useLikePost({
     fetcher: authFetch,
     mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getGetPostsQueryKey(),
-        });
-      },
+      onSuccess: refreshPosts,
     },
   });
 
   const { mutate: unlikePost, isPending: isUnliking } = useUnlikePost({
     fetcher: authFetch,
     mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getGetPostsQueryKey(),
-        });
-      },
+      onSuccess: refreshPosts,
     },
   });
 
