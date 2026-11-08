@@ -19,4 +19,5 @@ public interface IPostService
         Guid userId,
         string content
     );
+    Task<bool> DeleteAsync(Guid id, Guid userId);
 }
