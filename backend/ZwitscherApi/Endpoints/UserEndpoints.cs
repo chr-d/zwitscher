@@ -17,7 +17,12 @@ public static class UserEndpoints
             .WithName("GetCurrentUser")
             .WithSummary("Get the authenticated user's profile")
             .RequireAuthorization();
-
+        users
+            .MapGet("/me/likes", GetLikedPosts)
+            .WithName("GetLikedPosts")
+            .WithSummary("Get the authenticated user's liked posts")
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status401Unauthorized);
         users
             .MapGet("/{id:guid}/posts", GetPostsByUser)
             .WithName("GetPostsByUser")
