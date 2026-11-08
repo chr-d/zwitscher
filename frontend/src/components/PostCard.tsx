@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import { Edit } from "reicon-react";
 
 import type { PostResponseDto } from "@/api/generated/models";
@@ -28,7 +28,12 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
           id="displayName"
           className="card-title block text-[24px] leading-tight font-black [overflow-wrap:anywhere] text-primary-content max-[500px]:text-[24px]"
         >
-          {Post.author.displayName}
+          <Link
+            to={`/user/${encodeURIComponent(Post.author.username)}`}
+            className="hover:underline focus-visible:underline"
+          >
+            {Post.author.displayName}
+          </Link>
         </h2>
       </div>
 
@@ -49,7 +54,11 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
         className="card-actions px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
       >
         <p className="flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
-          <LikeButton postId={post.id} isLiked={post.likedByMe} />
+          <LikeButton
+            postId={post.id}
+            isLiked={post.likedByMe}
+            author={post.author}
+          />
           <span
             aria-label={`${post.likeCount} Likes`}
             className="text-base-content"

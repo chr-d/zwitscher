@@ -1,4 +1,3 @@
-import { type QueryKey, useQueryClient } from "@tanstack/react-query";
 import { Heart } from "reicon-react";
 
 import {
@@ -8,49 +7,49 @@ import {
   useLikePost,
   useUnlikePost,
 } from "@/api/generated";
+import type { AuthorResponseDto } from "@/api/generated/models";
+import { queryClient } from "@/api/queryClient";
 import { useAuth } from "@/auth/AuthContext";
 
 const LikeButton = ({
   postId,
   isLiked,
+  author,
 }: {
   postId: string;
   isLiked: boolean;
+  author: AuthorResponseDto;
 }) => {
-  const { authFetch, user } = useAuth();
-  const queryClient = useQueryClient();
+  const { hasSession, authFetch } = useAuth();
 
-  const refreshPosts = async () => {
-    const queryKeys: QueryKey[] = [
-      getGetPostsQueryKey(),
-      getGetLikedPostsQueryKey(),
-    ];
-    if (user) {
-      queryKeys.push(getGetPostsByUserQueryKey(user.id));
-    }
-
-    await Promise.all(
-      queryKeys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+  const invalidatePostQueries = () =>
+    Promise.all(
+      [
+        getGetPostsQueryKey(),
+        getGetPostsByUserQueryKey(author.id),
+        getGetPostsByUserQueryKey(author.username.toLowerCase()),
+        getGetLikedPostsQueryKey(),
+      ].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
     );
-  };
 
   const { mutate: likePost, isPending: isLiking } = useLikePost({
     fetcher: authFetch,
     mutation: {
-      onSuccess: refreshPosts,
+      onSuccess: invalidatePostQueries,
     },
   });
 
   const { mutate: unlikePost, isPending: isUnliking } = useUnlikePost({
     fetcher: authFetch,
     mutation: {
-      onSuccess: refreshPosts,
+      onSuccess: invalidatePostQueries,
     },
   });
 
   const isPending = isLiking || isUnliking;
 
   const handleToggleLike = () => {
+    if (!hasSession || isPending) return;
     if (isLiked) {
       unlikePost({ id: postId });
     } else {
@@ -60,9 +59,10 @@ const LikeButton = ({
 
   return (
     <button
+      type="button"
       onClick={handleToggleLike}
-      disabled={isPending}
-      className="cursor-pointer"
+      disabled={!hasSession || isPending}
+      className="cursor-pointer disabled:cursor-default"
     >
       {isLiked ? <Heart weight="Filled" color="red" /> : <Heart color="red" />}
     </button>
