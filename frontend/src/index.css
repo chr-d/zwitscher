@@ -5,7 +5,7 @@
 }
 @plugin "daisyui/theme" {
   name: "zwitscher";
-  default: false;
+  default: true;
   prefersdark: false;
   color-scheme: light;
 
