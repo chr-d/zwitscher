@@ -1,11 +1,11 @@
-import { useGetLikedPostsByUser } from "@/api/generated";
+import { useGetLikedPosts } from "@/api/generated";
 import { useAuth } from "@/auth/AuthContext";
 import CreatePost from "@/components/CreatePostModal";
 import PostCard from "@/components/PostCard";
 
 const LikedByMe = () => {
   const { hasSession, authFetch } = useAuth();
-  const { data, isLoading, isError } = useGetLikedPostsByUser({
+  const { data, isLoading, isError } = useGetLikedPosts({
     fetcher: hasSession ? authFetch : fetch,
   });
   if (!hasSession) {
