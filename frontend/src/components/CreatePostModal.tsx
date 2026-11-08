@@ -1,11 +1,12 @@
-// const { mutate } = useCreatePost();
 import { useState } from "react";
 import { Plus, X } from "reicon-react";
 
 import {
+  getGetLikedPostsQueryKey,
+  getGetPostsByUserQueryKey,
   getGetPostsQueryKey,
-  useCreatePost,
-} from "@/api/generated/posts/posts";
+} from "@/api/generated";
+import { useCreatePost } from "@/api/generated/posts/posts";
 import { queryClient } from "@/api/queryClient";
 import { useAuth } from "@/auth/AuthContext";
 
@@ -22,9 +23,16 @@ const CreatePost = () => {
     fetcher: authFetch,
     mutation: {
       onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: getGetPostsQueryKey(),
-        });
+        if (user) {
+          await Promise.all(
+            [
+              getGetPostsQueryKey(),
+              getGetPostsByUserQueryKey(user.id),
+              getGetPostsByUserQueryKey(user.userName.toLowerCase()),
+              getGetLikedPostsQueryKey(),
+            ].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+          );
+        }
 
         setContent("");
         setIsOpen(false);
