@@ -21,6 +21,7 @@ import type {
   CurrentUserResponseDto,
   HttpValidationProblemDetails,
   PostPageResponseDto,
+  UserPostsResponseDto,
 } from "../models";
 
 const withQueryKey = <T extends object, K>(
@@ -385,13 +386,13 @@ export const getGetPostsByUserUrl = (id: string) => {
 };
 
 /**
- * @summary Get a list of a users posts, newest first
+ * @summary Get a user's public profile and posts by ID or username, newest first
  */
 export const getPostsByUser = async (
   id: string,
   options?: RequestInit,
   fetchFn?: typeof globalThis.fetch,
-): Promise<PostPageResponseDto> => {
+): Promise<UserPostsResponseDto> => {
   const res = await (fetchFn ?? fetch)(getGetPostsByUserUrl(id), {
     ...options,
     method: "GET",
@@ -400,15 +401,15 @@ export const getPostsByUser = async (
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
   if (!res.ok) {
     const err: globalThis.Error & {
-      info?: PostPageResponseDto;
+      info?: UserPostsResponseDto;
       status?: number;
     } = new globalThis.Error();
-    const data: PostPageResponseDto = body ? JSON.parse(body) : {};
+    const data: UserPostsResponseDto = body ? JSON.parse(body) : {};
     err.info = data;
     err.status = res.status;
     throw err;
   }
-  const data: PostPageResponseDto = body ? JSON.parse(body) : {};
+  const data: UserPostsResponseDto = body ? JSON.parse(body) : {};
   return data;
 };
 
@@ -540,7 +541,7 @@ export function useGetPostsByUser<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 /**
- * @summary Get a list of a users posts, newest first
+ * @summary Get a user's public profile and posts by ID or username, newest first
  */
 
 export function useGetPostsByUser<
