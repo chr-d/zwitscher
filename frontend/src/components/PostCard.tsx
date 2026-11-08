@@ -1,13 +1,19 @@
+import { useState } from "react";
 import { useLocation } from "react-router";
 import { Edit } from "reicon-react";
 
 import type { PostResponseDto } from "@/api/generated/models";
+import { useAuth } from "@/auth/AuthContext";
+import EditPostModal from "@/components/EditPostModal";
 import LikeButton from "@/components/LikeButton";
 
 const PostCard = ({ post }: { post: PostResponseDto }) => {
   // const {id, } = post;
   const Post = post;
   const { pathname } = useLocation();
+  const { hasSession } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const canEdit = pathname === "/myposts" && hasSession && post.canEdit;
 
   return (
     <div
@@ -51,12 +57,20 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
             {post.likeCount}
           </span>
         </p>
-        {pathname === "/myposts" && (
-          <p className="ml-12 flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
-            <Edit color="black" />
-          </p>
+        {canEdit && (
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            aria-label="Edit post"
+            className="ml-12 flex cursor-pointer items-center gap-1.5 text-base font-extrabold text-base-content focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary max-[500px]:gap-1 max-[500px]:text-sm"
+          >
+            <Edit />
+          </button>
         )}
       </div>
+      {canEdit && isEditing && (
+        <EditPostModal post={post} onClose={() => setIsEditing(false)} />
+      )}
     </div>
   );
 };
