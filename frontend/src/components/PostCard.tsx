@@ -1,9 +1,13 @@
+import { useLocation } from "react-router";
+import { Edit } from "reicon-react";
+
 import type { PostResponseDto } from "@/api/generated/models";
 import LikeButton from "@/components/LikeButton";
 
 const PostCard = ({ post }: { post: PostResponseDto }) => {
   // const {id, } = post;
   const Post = post;
+  const { pathname } = useLocation();
 
   return (
     <div
@@ -47,6 +51,11 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
             {post.likeCount}
           </span>
         </p>
+        {pathname === "/myposts" && (
+          <p className="ml-12 flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
+            <Edit color="black" />
+          </p>
+        )}
       </div>
     </div>
   );
