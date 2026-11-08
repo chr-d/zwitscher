@@ -24,9 +24,9 @@ public static class UserEndpoints
             .RequireAuthorization()
             .Produces(StatusCodes.Status401Unauthorized);
         users
-            .MapGet("/{id:guid}/posts", GetPostsByUser)
+            .MapGet("/{id}/posts", GetPostsByUser)
             .WithName("GetPostsByUser")
-            .WithSummary("Get a list of a users posts, newest first");
+            .WithSummary("Get a user's public profile and posts by ID or username, newest first");
     }
 
     private static async Task<Results<Ok<CurrentUserResponseDto>, NotFound>> GetCurrentUser(
@@ -39,20 +39,24 @@ public static class UserEndpoints
     }
 
     private static async Task<
-        Results<Ok<PostPageResponseDto>, NotFound, ValidationProblem>
+        Results<Ok<UserPostsResponseDto>, NotFound, ValidationProblem>
     > GetPostsByUser(
-        Guid id,
+        string id,
         ClaimsPrincipal user,
         IUserService userService,
         IPostService postService
     )
     {
-        var author = await userService.GetByIdAsync(id);
+        var author = Guid.TryParse(id, out var authorId)
+            ? await userService.GetByIdAsync(authorId)
+            : await userService.GetByUserNameAsync(id);
         if (author is null)
             return TypedResults.NotFound();
         Guid? currentUserId = user.Identity?.IsAuthenticated == true ? user.GetUserId() : null;
-        var result = await postService.GetByUserAsync(id, currentUserId);
-        return TypedResults.Ok(result);
+        var result = await postService.GetByUserAsync(author.Id, currentUserId);
+        return TypedResults.Ok(
+            new UserPostsResponseDto(author, result.Items, result.Page, result.HasMore)
+        );
     }
 
     private static async Task<Results<Ok<PostPageResponseDto>, ValidationProblem>> GetLikedPosts(
