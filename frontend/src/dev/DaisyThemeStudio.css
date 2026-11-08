@@ -626,8 +626,8 @@
 }
 .dts-launcher {
   position: fixed;
-  top: 16px;
-  right: 16px;
+  bottom: 16px;
+  left: 80px;
   z-index: 2147483000;
   border: 1px solid #51496d;
   background: #232338;
@@ -642,6 +642,10 @@
   background: #34304d;
 }
 @media (max-width: 620px) {
+  .dts-launcher {
+    bottom: 80px;
+    left: 16px;
+  }
   .dts-studio {
     top: 8px;
     right: 8px;
