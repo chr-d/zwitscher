@@ -75,7 +75,7 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
             title="Edit post"
             className="ml-12 flex cursor-pointer items-center gap-1.5 text-base font-extrabold text-base-content focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary max-[500px]:gap-1 max-[500px]:text-sm"
           >
-            <Edit />
+            <Edit className="hover:text-accent-content" />
           </button>
         )}
         {canEdit && <DeleteButton postId={post.id} />}
