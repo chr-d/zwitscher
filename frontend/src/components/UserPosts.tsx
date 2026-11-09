@@ -22,7 +22,7 @@ export default function UserPosts({
   });
 
   return (
-    <main className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-neutral">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-neutral">
       {isPending ? (
         <p role="status" className="m-16 font-bold">
           Loading...
@@ -47,7 +47,7 @@ export default function UserPosts({
       ) : (
         <>
           {showProfile && (
-            <header className="m-4 w-[calc(100%_-_24px)] max-w-[600px] rounded-[6px] bg-base-100 p-6 text-base-content">
+            <header className="m-4 w-[calc(100%_-_32px)] max-w-[600px] rounded-[6px] bg-base-100 p-6 text-base-content">
               <h1 className="text-2xl font-black [overflow-wrap:anywhere]">
                 {data.user.displayName}
               </h1>
@@ -74,6 +74,6 @@ export default function UserPosts({
           {hasSession && user?.id === data.user.id && <CreatePost />}
         </>
       )}
-    </main>
+    </div>
   );
 }

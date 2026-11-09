@@ -19,7 +19,7 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
   return (
     <div
       id={post.id}
-      className="card m-[16px] w-[calc(100%_-_24px)] max-w-[600px] overflow-hidden rounded-[6px] bg-primary-content text-base-100 shadow-[0_4px_18px_rgba(90,169,230,0.25)] transition-transform duration-200 motion-safe:hover:-translate-y-0.5"
+      className="card m-[16px] w-[calc(100%_-_32px)] max-w-[600px] overflow-hidden rounded-[6px] bg-primary-content text-base-100 shadow-[0_4px_18px_rgba(90,169,230,0.25)] transition-transform duration-200 motion-safe:hover:-translate-y-0.5"
     >
       <div
         id="postHead"
