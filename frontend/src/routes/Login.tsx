@@ -57,62 +57,65 @@ export default function Login() {
   if (auth.hasSession) return <Navigate to="/" replace />;
 
   return (
-    <section className="flex min-h-full items-center justify-center bg-neutral px-4 py-8">
-      <div className="card w-full max-w-md bg-base-100 text-base-content shadow-xl">
-        <div className="card-body gap-6">
-          <div>
-            <h1 className="card-title text-2xl">Log in to Zwitscher</h1>
+    <>
+      <title>Login - zwitscher</title>
+      <section className="flex min-h-full items-center justify-center bg-neutral px-4 py-8">
+        <div className="card w-full max-w-md bg-base-100 text-base-content shadow-xl">
+          <div className="card-body gap-6">
+            <div>
+              <h1 className="card-title text-2xl">Log in to Zwitscher</h1>
+            </div>
+
+            {registrationResult?.registered && (
+              <div role="status" className="alert alert-success">
+                Account created. Log in to start posting.
+              </div>
+            )}
+            {(submitError || auth.error) && (
+              <div role="alert" className="alert alert-error">
+                {submitError ?? auth.error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <fieldset disabled={isSubmitting} className="fieldset gap-4 p-0">
+                <legend className="sr-only">Login details</legend>
+                <AuthField
+                  name="email"
+                  label="Email"
+                  type="email"
+                  required
+                  defaultValue={registrationResult?.email}
+                  errors={fieldErrors.email}
+                />
+                <AuthField
+                  name="password"
+                  label="Password"
+                  type="password"
+                  required
+                  errors={fieldErrors.password}
+                />
+                <button type="submit" className="btn mt-2 btn-primary">
+                  {isSubmitting && (
+                    <span
+                      aria-hidden="true"
+                      className="loading loading-sm loading-spinner"
+                    />
+                  )}
+                  {isSubmitting ? "Logging in…" : "Log in"}
+                </button>
+              </fieldset>
+            </form>
+
+            <p className="text-center text-sm">
+              New to Zwitscher?{" "}
+              <Link to="/register" className="link font-semibold link-primary">
+                Create an account
+              </Link>
+            </p>
           </div>
-
-          {registrationResult?.registered && (
-            <div role="status" className="alert alert-success">
-              Account created. Log in to start posting.
-            </div>
-          )}
-          {(submitError || auth.error) && (
-            <div role="alert" className="alert alert-error">
-              {submitError ?? auth.error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <fieldset disabled={isSubmitting} className="fieldset gap-4 p-0">
-              <legend className="sr-only">Login details</legend>
-              <AuthField
-                name="email"
-                label="Email"
-                type="email"
-                required
-                defaultValue={registrationResult?.email}
-                errors={fieldErrors.email}
-              />
-              <AuthField
-                name="password"
-                label="Password"
-                type="password"
-                required
-                errors={fieldErrors.password}
-              />
-              <button type="submit" className="btn mt-2 btn-primary">
-                {isSubmitting && (
-                  <span
-                    aria-hidden="true"
-                    className="loading loading-sm loading-spinner"
-                  />
-                )}
-                {isSubmitting ? "Logging in…" : "Log in"}
-              </button>
-            </fieldset>
-          </form>
-
-          <p className="text-center text-sm">
-            New to Zwitscher?{" "}
-            <Link to="/register" className="link font-semibold link-primary">
-              Create an account
-            </Link>
-          </p>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
