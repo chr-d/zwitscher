@@ -4,15 +4,15 @@ Zwitscher ist eine Fullstack-Microblogging-App zum Teilen kurzer Gedanken. Nutze
 
 Funktionen
 
-Registrierung und Anmeldung mit JWT-Authentifizierung
+- Registrierung und Anmeldung mit JWT-Authentifizierung
 
-Chronologischer Feed mit den neuesten Beiträgen zuerst
+- Chronologischer Feed mit den neuesten Beiträgen zuerst
 
-Eigene Beiträge erstellen, bearbeiten und löschen
+- Eigene Beiträge erstellen, bearbeiten und löschen
 
-Beiträge liken und gelikte Beiträge gesammelt anzeigen
+- Beiträge liken und gelikte Beiträge gesammelt anzeigen
 
-Profilseiten mit den Beiträgen einzelner Nutzer
+- Profilseiten mit den Beiträgen einzelner Nutzer
 
 Technologien
 
