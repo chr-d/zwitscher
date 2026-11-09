@@ -92,6 +92,7 @@ public class PostService(AppDbContext db) : IPostService
             .ToListAsync();
         return new PostPageResponseDto(items, 1, false); //TODO: implement paging logic
     }
+
     public async Task<(bool Found, bool Allowed, PostResponseDto? Post)> UpdateAsync(
         Guid id,
         Guid userId,
@@ -110,16 +111,17 @@ public class PostService(AppDbContext db) : IPostService
 
         return (true, true, await GetByIdAsync(id, userId));
     }
-    public async Task<bool> DeleteAsync(Guid id, Guid userId)
+
+    public async Task<(bool Found, bool Allowed)> DeleteAsync(Guid id, Guid userId)
     {
         var post = await db.Posts.FindAsync(id);
         if (post is null)
-            return (false);
+            return (false, false);
         if (post.AuthorId != userId)
-            return (false);
+            return (true, false);
 
         db.Posts.Remove(post);
         await db.SaveChangesAsync();
-        return true;
+        return (true, true);
     }
 }

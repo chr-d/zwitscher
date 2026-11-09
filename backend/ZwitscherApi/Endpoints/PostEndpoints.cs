@@ -29,7 +29,9 @@ public static class PostEndpoints
             .MapDelete("/{id:guid}/delete", DeletePost)
             .WithName("DeletePost")
             .WithSummary("Delete a post")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status403Forbidden);
     }
 
     private static async Task<Ok<PostPageResponseDto>> GetPosts(
@@ -57,19 +59,21 @@ public static class PostEndpoints
         return TypedResults.Created($"/api/posts/{post.Id}", post);
     }
 
-    private static async Task<Results<NoContent, UnauthorizedHttpResult>> DeletePost(
-    Guid id,
-    ClaimsPrincipal user,
-    IPostService postService
-)
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult>> DeletePost(
+        Guid id,
+        ClaimsPrincipal user,
+        IPostService postService
+    )
     {
-        Guid userId = user.GetUserId();
-        var post = await postService.DeleteAsync(id, userId);
-        if (post)
-        {
-            return TypedResults.NoContent();
-        }
-        return TypedResults.Unauthorized();
+        if (id == Guid.Empty)
+            return TypedResults.NotFound();
+
+        var result = await postService.DeleteAsync(id, user.GetUserId());
+        if (!result.Found)
+            return TypedResults.NotFound();
+        if (!result.Allowed)
+            return TypedResults.Forbid();
+        return TypedResults.NoContent();
     }
 
     private static async Task<
