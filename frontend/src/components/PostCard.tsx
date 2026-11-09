@@ -7,6 +7,7 @@ import { useAuth } from "@/auth/AuthContext";
 import DeleteButton from "@/components/DeleteButton";
 import EditPostModal from "@/components/EditPostModal";
 import LikeButton from "@/components/LikeButton";
+import PostDate from "@/components/PostDate";
 
 const PostCard = ({ post }: { post: PostResponseDto }) => {
   // const {id, } = post;
@@ -15,21 +16,6 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
   const { hasSession } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const canEdit = pathname === "/myposts" && hasSession && post.canEdit;
-
-  const utcDate = Post.updatedAtUtc ?? Post.createdAtUtc;
-
-  const formatDate = (utcDate: string) => {
-    return new Intl.DateTimeFormat("de-DE", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(new Date(utcDate));
-  };
-
-  const date = formatDate(utcDate);
 
   return (
     <div
@@ -92,9 +78,10 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
           </button>
         )}
         {canEdit && <DeleteButton postId={post.id} />}
-        <div className="ml-auto">
-          <p className="text-sm text-neutral-content">{date}</p>
-        </div>
+        <PostDate
+          createdAtUtc={post.createdAtUtc}
+          updatedAtUtc={post.updatedAtUtc}
+        />
       </div>
       {canEdit && isEditing && (
         <EditPostModal post={post} onClose={() => setIsEditing(false)} />
