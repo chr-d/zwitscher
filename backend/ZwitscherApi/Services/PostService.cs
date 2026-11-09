@@ -111,4 +111,17 @@ public class PostService(AppDbContext db) : IPostService
 
         return (true, true, await GetByIdAsync(id, userId));
     }
+
+    public async Task<(bool Found, bool Allowed)> DeleteAsync(Guid id, Guid userId)
+    {
+        var post = await db.Posts.FindAsync(id);
+        if (post is null)
+            return (false, false);
+        if (post.AuthorId != userId)
+            return (true, false);
+
+        db.Posts.Remove(post);
+        await db.SaveChangesAsync();
+        return (true, true);
+    }
 }
