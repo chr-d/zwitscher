@@ -16,6 +16,21 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
   const [isEditing, setIsEditing] = useState(false);
   const canEdit = pathname === "/myposts" && hasSession && post.canEdit;
 
+  const utcDate = Post.updatedAtUtc ?? Post.createdAtUtc;
+
+  const formatDate = (utcDate: string) => {
+    return new Intl.DateTimeFormat("de-DE", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(new Date(utcDate));
+  };
+
+  const date = formatDate(utcDate);
+
   return (
     <div
       id={post.id}
@@ -44,12 +59,11 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
       >
         <p
           id="postContent"
-          className="leading-relaxed font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap text-base-content max-[500px]:text-sm"
+          className="leading-relaxed font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap text-base-content"
         >
           {Post.content}
         </p>
       </div>
-
       <div
         id="likes"
         className="card-actions px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
@@ -78,6 +92,9 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
           </button>
         )}
         {canEdit && <DeleteButton postId={post.id} />}
+        <div className="self-mx-6 mb-2 max-[500px]:mx-2 max-[500px]:mb-1">
+          <p className="text-sm text-neutral-content">{date}</p>
+        </div>
       </div>
       {canEdit && isEditing && (
         <EditPostModal post={post} onClose={() => setIsEditing(false)} />
