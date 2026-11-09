@@ -16,20 +16,20 @@ const LikedByMe = () => {
   }
   if (isLoading) {
     return (
-      <main>
+      <div>
         <p className="m-16 font-bold">Loading...</p>
-      </main>
+      </div>
     );
   }
   if (isError) {
     return (
-      <main className="flex h-full w-full flex-1 flex-col items-center overflow-y-auto bg-neutral">
+      <div className="flex h-full w-full flex-1 flex-col items-center overflow-y-auto bg-neutral">
         <p className="m-16 font-bold text-accent">Error loading posts</p>
-      </main>
+      </div>
     );
   }
   return (
-    <main className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-neutral">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-neutral">
       {data?.items.length === 0 ? (
         <div
           role="status"
@@ -45,7 +45,7 @@ const LikedByMe = () => {
         data?.items.map((post) => <PostCard post={post} key={post.id} />)
       )}
       <CreatePost />
-    </main>
+    </div>
   );
 };
 
