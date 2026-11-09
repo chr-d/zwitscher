@@ -14,7 +14,7 @@ const Header = () => {
 
   return (
     <header className="shrink-0">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 rounded-b-sm bg-secondary px-4 py-3 text-base-content">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 bg-secondary px-4 py-3 text-base-content">
         <Link
           to="/"
           aria-label="Zwitscher home"
