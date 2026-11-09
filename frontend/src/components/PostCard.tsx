@@ -66,7 +66,7 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
       </div>
       <div
         id="likes"
-        className="card-actions px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
+        className="card-actions items-center px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
       >
         <p className="flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
           <LikeButton
@@ -92,7 +92,7 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
           </button>
         )}
         {canEdit && <DeleteButton postId={post.id} />}
-        <div className="self-mx-6 mb-2 max-[500px]:mx-2 max-[500px]:mb-1">
+        <div className="ml-auto">
           <p className="text-sm text-neutral-content">{date}</p>
         </div>
       </div>
