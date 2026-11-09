@@ -4,5 +4,10 @@ import UserPosts from "@/components/UserPosts";
 
 export default function Profile() {
   const { username = "" } = useParams<{ username: string }>();
-  return <UserPosts identifier={username.toLowerCase()} showProfile />;
+  return (
+    <>
+      <title>{`@${username} - zwitscher`}</title>
+      <UserPosts identifier={username.toLowerCase()} showProfile />
+    </>
+  );
 }

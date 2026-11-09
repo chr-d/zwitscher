@@ -8,7 +8,12 @@ const MyPosts = () => {
   if (!hasSession) {
     return <Navigate to="/login" replace />;
   }
-  return <UserPosts identifier={user?.id ?? ""} />;
+  return (
+    <>
+      <title>My Profile - zwitscher</title>
+      <UserPosts identifier={user?.id ?? ""} />
+    </>
+  );
 };
 
 export default MyPosts;

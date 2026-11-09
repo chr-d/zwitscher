@@ -16,36 +16,39 @@ const LikedByMe = () => {
   }
   if (isLoading) {
     return (
-      <main>
+      <div>
         <p className="m-16 font-bold">Loading...</p>
-      </main>
+      </div>
     );
   }
   if (isError) {
     return (
-      <main className="flex h-full w-full flex-1 flex-col items-center overflow-y-auto bg-neutral">
+      <div className="flex h-full w-full flex-1 flex-col items-center overflow-y-auto bg-neutral">
         <p className="m-16 font-bold text-accent">Error loading posts</p>
-      </main>
+      </div>
     );
   }
   return (
-    <main className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-neutral">
-      {data?.items.length === 0 ? (
-        <div
-          role="status"
-          className="m-8 max-w-md rounded-[6px] bg-base-100 p-6 text-center text-base-content sm:m-16"
-        >
-          <h1 className="text-2xl font-bold">No liked posts yet</h1>
-          <p className="mt-2">Like a post in the feed to see it here.</p>
-          <Link to="/" className="btn mt-4 btn-primary">
-            Browse posts
-          </Link>
-        </div>
-      ) : (
-        data?.items.map((post) => <PostCard post={post} key={post.id} />)
-      )}
-      <CreatePost />
-    </main>
+    <>
+      <title>My Likes - zwitscher</title>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-y-auto bg-neutral">
+        {data?.items.length === 0 ? (
+          <div
+            role="status"
+            className="m-8 max-w-md rounded-[6px] bg-base-100 p-6 text-center text-base-content sm:m-16"
+          >
+            <h1 className="text-2xl font-bold">No liked posts yet</h1>
+            <p className="mt-2">Like a post in the feed to see it here.</p>
+            <Link to="/" className="btn mt-4 btn-primary">
+              Browse posts
+            </Link>
+          </div>
+        ) : (
+          data?.items.map((post) => <PostCard post={post} key={post.id} />)
+        )}
+        <CreatePost />
+      </div>
+    </>
   );
 };
 

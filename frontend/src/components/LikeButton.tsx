@@ -63,6 +63,8 @@ const LikeButton = ({
       onClick={handleToggleLike}
       disabled={!hasSession || isPending}
       className="cursor-pointer disabled:cursor-default"
+      aria-label={isLiked ? "Unlike post" : "Like post"}
+      title={isLiked ? "Unlike post" : "Like post"}
     >
       {isLiked ? <Heart weight="Filled" color="red" /> : <Heart color="red" />}
     </button>

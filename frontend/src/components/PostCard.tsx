@@ -7,6 +7,7 @@ import { useAuth } from "@/auth/AuthContext";
 import DeleteButton from "@/components/DeleteButton";
 import EditPostModal from "@/components/EditPostModal";
 import LikeButton from "@/components/LikeButton";
+import PostDate from "@/components/PostDate";
 
 const PostCard = ({ post }: { post: PostResponseDto }) => {
   // const {id, } = post;
@@ -19,7 +20,7 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
   return (
     <div
       id={post.id}
-      className="card m-[16px] w-[calc(100%_-_24px)] max-w-[600px] overflow-hidden rounded-[6px] bg-primary-content text-base-100 shadow-[0_4px_18px_rgba(90,169,230,0.25)] transition-transform duration-200 motion-safe:hover:-translate-y-0.5"
+      className="card m-[16px] w-[calc(100%_-_32px)] max-w-[600px] overflow-hidden rounded-[6px] bg-primary-content text-base-100 shadow-[0_4px_18px_rgba(90,169,230,0.25)] transition-transform duration-200 motion-safe:hover:-translate-y-0.5"
     >
       <div
         id="postHead"
@@ -44,15 +45,14 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
       >
         <p
           id="postContent"
-          className="leading-relaxed font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap text-base-content max-[500px]:text-sm"
+          className="leading-relaxed font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap text-base-content"
         >
           {Post.content}
         </p>
       </div>
-
       <div
         id="likes"
-        className="card-actions px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
+        className="card-actions items-center px-8 pb-5 max-[500px]:px-4 max-[500px]:pb-3"
       >
         <p className="flex items-center gap-1.5 text-base font-extrabold max-[500px]:gap-1 max-[500px]:text-sm">
           <LikeButton
@@ -72,12 +72,17 @@ const PostCard = ({ post }: { post: PostResponseDto }) => {
             type="button"
             onClick={() => setIsEditing(true)}
             aria-label="Edit post"
+            title="Edit post"
             className="ml-12 flex cursor-pointer items-center gap-1.5 text-base font-extrabold text-base-content focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary max-[500px]:gap-1 max-[500px]:text-sm"
           >
-            <Edit />
+            <Edit className="hover:text-accent-content" />
           </button>
         )}
         {canEdit && <DeleteButton postId={post.id} />}
+        <PostDate
+          createdAtUtc={post.createdAtUtc}
+          updatedAtUtc={post.updatedAtUtc}
+        />
       </div>
       {canEdit && isEditing && (
         <EditPostModal post={post} onClose={() => setIsEditing(false)} />
