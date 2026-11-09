@@ -509,9 +509,9 @@ export const deletePost = async (
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
   if (!res.ok) {
-    const err: globalThis.Error & { info?: any; status?: number } =
+    const err: globalThis.Error & { info?: void; status?: number } =
       new globalThis.Error();
-    const data = body ? JSON.parse(body) : {};
+    const data: void = body ? JSON.parse(body) : {};
     err.info = data;
     err.status = res.status;
     throw err;
@@ -523,7 +523,7 @@ export const deletePost = async (
 export const getDeletePostMutationKey = () => ["deletePost"] as const;
 
 export const getDeletePostMutationOptions = <
-  TError = globalThis.Error & { info?: unknown; status?: number },
+  TError = globalThis.Error & { info?: void; status?: number },
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -570,7 +570,7 @@ export type DeletePostMutationResult = NonNullable<
 >;
 
 export type DeletePostMutationError = globalThis.Error & {
-  info?: unknown;
+  info?: void;
   status?: number;
 };
 export type DeletePostMutationVariables = { id: string };
@@ -579,7 +579,7 @@ export type DeletePostMutationVariables = { id: string };
  * @summary Delete a post
  */
 export const useDeletePost = <
-  TError = globalThis.Error & { info?: unknown; status?: number },
+  TError = globalThis.Error & { info?: void; status?: number },
   TContext = unknown,
 >(
   options?: {
