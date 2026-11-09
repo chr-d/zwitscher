@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import { useGetPostsByUser } from "@/api/generated/users/users";
 import { useAuth } from "@/auth/AuthContext";
 import CreatePost from "@/components/CreatePostModal";
@@ -25,9 +27,22 @@ export default function UserPosts({
         <p role="status" className="m-16 font-bold">
           Loading...
         </p>
+      ) : isError && error.status === 404 ? (
+        <div
+          role="alert"
+          className="m-8 max-w-md rounded-[6px] bg-base-100 p-6 text-center text-base-content sm:m-16"
+        >
+          <h1 className="text-2xl font-bold">User not found</h1>
+          <p className="mt-2">
+            Check the username or return to the feed to browse posts.
+          </p>
+          <Link to="/" className="btn mt-4 btn-primary">
+            Browse posts
+          </Link>
+        </div>
       ) : isError ? (
         <p role="alert" className="m-16 font-bold text-accent">
-          {error.status === 404 ? "User not found" : "Error loading posts"}
+          Error loading posts
         </p>
       ) : (
         <>
@@ -42,7 +57,17 @@ export default function UserPosts({
             </header>
           )}
           {data.items.length === 0 ? (
-            <p className="m-16 font-bold">No posts yet</p>
+            <div
+              role="status"
+              className="m-8 max-w-md rounded-[6px] bg-base-100 p-6 text-center text-base-content sm:m-16"
+            >
+              <h2 className="text-2xl font-bold">No posts yet</h2>
+              <p className="mt-2">
+                {hasSession && user?.id === data.user.id
+                  ? "Share your first post. Use the + button to get started."
+                  : `${data.user.displayName} hasn't shared any posts yet.`}
+              </p>
+            </div>
           ) : (
             data.items.map((post) => <PostCard key={post.id} post={post} />)
           )}

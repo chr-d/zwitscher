@@ -5,6 +5,7 @@ import Home from "@/routes/Home";
 import LikedByMe from "@/routes/LikedByMe";
 import Login from "@/routes/Login";
 import MyPosts from "@/routes/MyPosts";
+import NotFound from "@/routes/NotFound";
 import Profile from "@/routes/Profile";
 import Register from "@/routes/Register";
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="myposts" element={<MyPosts />} />
         <Route path="user/:username" element={<Profile />} />
         <Route path="likes" element={<LikedByMe />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
