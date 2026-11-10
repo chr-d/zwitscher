@@ -1,0 +1,99 @@
+name: Build and publish Docker images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_OWNER: chr-d
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Calculate migration fingerprint
+        id: migrations
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          from pathlib import Path
+          import hashlib
+
+          h = hashlib.sha256()
+
+          files = sorted(
+              p for p in Path("backend").rglob("*")
+              if p.is_file()
+              and "Migrations" in p.parts
+              and p.suffix in (".cs", ".sql")
+          )
+
+          for p in files:
+              h.update(str(p).encode())
+              h.update(b"\0")
+              h.update(p.read_bytes())
+              h.update(b"\0")
+
+          print(f"hash={h.hexdigest()}")
+          PY
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./backend/Dockerfile
+          target: api
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/zwitscher-api:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            dev.zwitscher.migrations.sha256=${{ steps.migrations.outputs.hash }}
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./frontend/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/zwitscher-web:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Build and push migrator
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./backend/Dockerfile
+          target: migrate
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/zwitscher-migrate:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
